@@ -2,7 +2,12 @@ from Delivery import *
 
 d = Delivery.fromInputFile("example")
 
-d.warehouses[0].products[0].productType = 10
+
+for w in d.warehouses:
+    print(w)
+
+for c in d.clients:
+    print(c)
 
 for p in d.products:
     print(p)

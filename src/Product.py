@@ -10,5 +10,15 @@ class Product:
     def isFinished(self):
         return self.lastPlace == self.orderPlace
 
+    def distanceTo(self, place):
+        return self.lastPlace.distanceTo(place)
+
     def __str__(self):
-        return "Product of type " + str(self.productType) + ("sent to" if self.isFinished() else " stored in") + " the " + str(self.lastPlace)
+        resultString = "Product of type " + str(self.productType)
+        if self.isFinished():
+            resultString += " sent to "
+        elif self.orderPlace is not None:
+            resultString += " to be send to a " + str(self.orderPlace) + " stored in the "
+        else:
+            resultString += " stored in the "
+        return resultString + str(self.lastPlace)
