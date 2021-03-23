@@ -7,6 +7,9 @@ class Product:
     def assignOrder(self, client):
         self.orderPlace = client
 
+    def hasOrder(self):
+        return self.orderPlace != None
+
     def isFinished(self):
         return self.lastPlace == self.orderPlace
 

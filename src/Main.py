@@ -1,6 +1,7 @@
 from Delivery import *
 
-d = Delivery.fromInputFile("example")
+if __name__ == "__main__":
+    d = Delivery.fromInputFile("example")
 
-for p in d.products:
-    print(p)
+    for p in d.solution:
+        print(p)
