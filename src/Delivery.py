@@ -1,6 +1,7 @@
 from Place import *
 from Path import *
 from random import randrange
+from math import ceil
 
 
 class Data:
@@ -11,6 +12,16 @@ class Data:
         self.numberOfTurns = int(turns)
         self.maxPayload = int(payload)
         self.productWeights = tuple(map(int, weights))
+
+    def evaluateSolution(self, solution):
+        turns = self.numberOfDrones * [self.numberOfTurns]
+        score = 0
+        factor = 1 / (self.numberOfTurns * 100)
+        for path in solution:
+            # TODO: Take into account the time a drone needs to go to the next warehouse before delivering it
+            turns[path.drone] -= path.duration()
+            score += ceil(turns[path.drone] * factor)
+        return score
 
 
 class Delivery:
@@ -45,14 +56,16 @@ class Delivery:
         solution = list(
             map(Path, filter(lambda x: x.hasOrder(), self.products)))
         assignDrones(solution)
-        return solution
+        return sorted(solution, key=lambda x: x.drone)
 
     def toOutputFile(self, file):
         with open("data/" + file + ".out", "w+") as outputFile:
             outputFile.write(str(2 * len(self.solution)) + "\n")
-            pathsOrderedByDrone = sorted(self.solution, key=lambda x: x.drone)
-            for path in pathsOrderedByDrone:
+            for path in self.solution:
                 outputFile.write(path.getOutputString())
+
+    def evaluateSolution(self):
+        return self.data.evaluateSolution(self.solution)
 
     @classmethod
     def fromInputFile(cls, file):

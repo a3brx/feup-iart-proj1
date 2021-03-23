@@ -7,6 +7,9 @@ class Path:
     def assignDrone(self, drone):
         self.drone = drone
 
+    def duration(self):
+        return self.product.distanceTo(self.destination) + 2
+
     def __str__(self):
         return "Path of product " + str(self.product.productType) + " to " + self.destination.getStringLocation() + " made by drone " + str(self.drone)
 

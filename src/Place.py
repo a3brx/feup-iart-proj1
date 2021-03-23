@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, ceil
 
 from Product import *
 
@@ -9,7 +9,7 @@ class Place:
         self.y = y
 
     def distanceTo(self, operand):
-        return sqrt(pow(self.x - operand.x, 2) + pow(self.y - operand.y, 2))
+        return ceil(sqrt(pow(self.x - operand.x, 2) + pow(self.y - operand.y, 2)))
 
     def distanceToProduct(self, product):
         return self.distanceTo(product.lastPlace)
