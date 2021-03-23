@@ -42,9 +42,17 @@ class Delivery:
                 path.assignDrone(randrange(self.data.numberOfDrones))
 
         assignProducts()
-        solution = list(map(Path, filter(lambda x: x.hasOrder(), self.products)))
+        solution = list(
+            map(Path, filter(lambda x: x.hasOrder(), self.products)))
         assignDrones(solution)
         return solution
+
+    def toOutputFile(self, file):
+        with open("data/" + file + ".out", "w+") as outputFile:
+            outputFile.write(str(2 * len(self.solution)) + "\n")
+            pathsOrderedByDrone = sorted(self.solution, key=lambda x: x.drone)
+            for path in pathsOrderedByDrone:
+                outputFile.write(path.getOutputString())
 
     @classmethod
     def fromInputFile(cls, file):
@@ -60,8 +68,9 @@ class Delivery:
             for i in range(numberOfWarehouses):
                 warehouseCoordinates = inputFile.readline().split()
                 warehouseItems = inputFile.readline().split()
-                warehouses.append(
-                    Warehouse(warehouseCoordinates, warehouseItems))
+                newWarehouse = Warehouse(
+                    i, warehouseCoordinates, warehouseItems)
+                warehouses.append(newWarehouse)
 
             # Orders
             numberOfOrders = int(inputFile.readline())
@@ -70,6 +79,7 @@ class Delivery:
                 orderCoordinates = inputFile.readline().split()
                 orderNumberOfItems = inputFile.readline()
                 orderProducts = inputFile.readline().split()
-                clients.append(Client(orderCoordinates, orderProducts))
+                newClient = Client(i, orderCoordinates, orderProducts)
+                clients.append(newClient)
 
             return Delivery(*problemInformation, productWeights, warehouses, clients)

@@ -19,8 +19,9 @@ class Place:
 
 
 class Warehouse(Place):
-    def __init__(self, coordinates, items):
+    def __init__(self, warehouseId, coordinates, items):
         super().__init__(*map(int, coordinates))
+        self.id = warehouseId
         self.createProducts(map(int, items))
 
     def createProducts(self, itemQuantities):
@@ -37,8 +38,9 @@ class Warehouse(Place):
 
 
 class Client(Place):
-    def __init__(self, coordinates, products):
+    def __init__(self, clientId, coordinates, products):
         super().__init__(*map(int, coordinates))
+        self.id = clientId
         self.wantedProducts = list(map(int, products))
 
     def __str__(self):
