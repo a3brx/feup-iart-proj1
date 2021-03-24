@@ -16,7 +16,7 @@ class Data:
     def evaluateSolution(self, solution):
         turns = self.numberOfDrones * [self.numberOfTurns]
         score = 0
-        factor = 1 / (self.numberOfTurns * 100)
+        factor = 1 / self.numberOfTurns * 100
         for path in solution:
             # TODO: Take into account the time a drone needs to go to the next warehouse before delivering it
             turns[path.drone] -= path.duration()
@@ -39,6 +39,7 @@ class Delivery:
             productsNotAssigned = self.products
             ordersSortedBySize = sorted(self.clients, key=len)
             for order in ordersSortedBySize:
+                print(len(productsNotAssigned))
                 productsNotAssigned = sorted(
                     productsNotAssigned, key=order.distanceToProduct
                 )
