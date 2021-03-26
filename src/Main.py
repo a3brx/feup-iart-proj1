@@ -1,12 +1,12 @@
 from Delivery import *
 
 if __name__ == "__main__":
-    test = "example"
+    test = "busy_day"
 
     d = Delivery.fromInputFile(test)
 
-    for p in d.solution:
-        print(p)
+    #for p in d.solution:
+    #    print(p)
 
     print("Score:", d.evaluateSolution())
 

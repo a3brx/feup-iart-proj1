@@ -1,7 +1,9 @@
 from math import sqrt, ceil
+from collections import OrderedDict
 
 from Product import *
 
+calculatedDistances = {}
 
 class Place:
     def __init__(self, x, y):
@@ -9,7 +11,18 @@ class Place:
         self.y = y
 
     def distanceTo(self, operand):
-        return ceil(sqrt(pow(self.x - operand.x, 2) + pow(self.y - operand.y, 2)))
+        diffx = abs(self.x - operand.x)
+        diffy = abs(self.y - operand.y)
+        if diffy < diffx:
+            tupleKey = (diffy, diffx)
+        else:
+            tupleKey = (diffx, diffy)
+        if tupleKey in calculatedDistances.keys():
+            return calculatedDistances[tupleKey]
+        else:
+            value = ceil(sqrt(diffx * diffx + diffy * diffy))
+            calculatedDistances[tupleKey] = value
+            return value
 
     def distanceToProduct(self, product):
         return self.distanceTo(product.lastPlace)

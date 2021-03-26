@@ -20,6 +20,8 @@ class Data:
         for path in solution:
             # TODO: Take into account the time a drone needs to go to the next warehouse before delivering it
             turns[path.drone] -= path.duration()
+            if turns[path.drone] < 0:
+                continue
             score += ceil(turns[path.drone] * factor)
         return score
 
@@ -40,14 +42,16 @@ class Delivery:
             ordersSortedBySize = sorted(self.clients, key=len)
             for order in ordersSortedBySize:
                 print(len(productsNotAssigned))
-                productsNotAssigned = sorted(
-                    productsNotAssigned, key=order.distanceToProduct
-                )
+                #productsNotAssigned = sorted(
+                #    productsNotAssigned, key=order.distanceToProduct
+                #)
                 for productType in order.wantedProducts:
-                    productToAssign = next(
-                        index for index, product in enumerate(productsNotAssigned) if product.productType == productType
-                    )
-                    productsNotAssigned.pop(productToAssign).assignOrder(order)
+                    i = 0
+                    for product in productsNotAssigned:
+                        if product.productType == productType:
+                            break
+                        i += 1
+                    productsNotAssigned.pop(i).assignOrder(order)
 
         def assignDrones(solution):
             for path in solution:
