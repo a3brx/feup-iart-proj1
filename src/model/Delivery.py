@@ -1,8 +1,8 @@
-from Place import *
-from Path import *
-from random import randrange
+from random import randrange, shuffle
 from math import ceil
 
+from model.Place import *
+from model.Path import *
 
 class Data:
     def __init__(self, rows, columns, drones, turns, payload, weights):
@@ -37,30 +37,29 @@ class Delivery:
         self.solution = self.initialSolution()
 
     def initialSolution(self):
-        def assignProducts():
-            productsNotAssigned = self.products
-            ordersSortedBySize = sorted(self.clients, key=len)
-            for order in ordersSortedBySize:
-                print(len(productsNotAssigned))
-                #productsNotAssigned = sorted(
-                #    productsNotAssigned, key=order.distanceToProduct
-                #)
-                for productType in order.wantedProducts:
-                    i = 0
-                    for product in productsNotAssigned:
-                        if product.productType == productType:
-                            break
-                        i += 1
-                    productsNotAssigned.pop(i).assignOrder(order)
+        # Assign products
+        productsNotAssigned = {}
+        for product in self.products:
+            if not product.productType in productsNotAssigned.keys():
+                productsNotAssigned[product.productType] = []
+            productsNotAssigned[product.productType].append(product)
+        ordersSortedBySize = sorted(self.clients, key=len)
+        for order in ordersSortedBySize:
+            for productType in order.wantedProducts:
+                productsNotAssignedOfType = sorted(
+                    productsNotAssigned[productType], key=order.distanceToProduct, reverse=True
+                )
+                productsNotAssignedOfType.pop().assignOrder(order)
 
-        def assignDrones(solution):
-            for path in solution:
-                path.assignDrone(randrange(self.data.numberOfDrones))
-
-        assignProducts()
         solution = list(
-            map(Path, filter(lambda x: x.hasOrder(), self.products)))
-        assignDrones(solution)
+            map(Path, filter(lambda x: x.hasOrder(), self.products))
+        )
+        shuffle(solution)
+
+        # Assign drones
+        for path in solution:
+            path.assignDrone(randrange(self.data.numberOfDrones))
+
         return sorted(solution, key=lambda x: x.drone)
 
     def toOutputFile(self, file):

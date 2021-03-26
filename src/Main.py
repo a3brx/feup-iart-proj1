@@ -1,4 +1,4 @@
-from Delivery import *
+from model.Delivery import *
 
 if __name__ == "__main__":
     test = "busy_day"
