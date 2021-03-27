@@ -11,7 +11,10 @@ class LocalSearch:
     def random_neighbour(self, neighbour):
         result = neighbour.copy()
         functions = [
-            insert_operation
+            swap_operations,
+            insert_operation,
+            remove_operation,
+            switch_operation_drone
         ]
         choice(functions)(result)
         return result

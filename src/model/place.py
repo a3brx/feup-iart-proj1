@@ -33,7 +33,6 @@ class Place:
 
 class Warehouse(Place):
     def __init__(self, warehouse_id, coordinates, items):
-        print(items)
         super().__init__(*map(int, coordinates))
         self.id = warehouse_id
         self.create_products(map(int, items))

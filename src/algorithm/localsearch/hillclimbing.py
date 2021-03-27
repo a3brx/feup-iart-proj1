@@ -8,12 +8,13 @@ class HillClimbing(LocalSearch):
     def run(self):
         neighbour = self.model
         it = 0
-        while it < 2:
-            print("Generating neighbour")
+        while it < 10:
             new_neighbour = self.random_neighbour(neighbour)
             # print(new_neighbour)
-            if new_neighbour.evaluate_solution() < neighbour.evaluate_solution():
-                print("Found better solution")
+            if new_neighbour.evaluate_solution() > neighbour.evaluate_solution():
                 neighbour = new_neighbour
+                print("-" * 100)
+                for path in neighbour.solution:
+                    print(path)
                 it = 0
             it += 1

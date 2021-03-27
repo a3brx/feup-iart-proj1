@@ -45,4 +45,10 @@ def remove_operation(model):
 
 
 def switch_operation_drone(model):
-    pass
+    solution_length = len(model.solution)
+    operation_to_switch = randrange(solution_length)
+    old_drone = model.solution[operation_to_switch].drone
+    new_drone = old_drone
+    while new_drone == old_drone:
+        new_drone = randrange(model.data.number_of_drones)
+    model.solution[operation_to_switch].drone = new_drone
