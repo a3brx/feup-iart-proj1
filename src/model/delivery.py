@@ -16,16 +16,27 @@ class Data:
         self.product_weights = tuple(map(int, weights))
 
     def evaluate_solution(self, solution):
-        turns = self.number_of_drones * [self.number_of_turns]
         score = 0
         factor = 1 / self.number_of_turns * 100
+
+        paths_from_drone = [[] for _ in range(self.number_of_drones)]
         for path in solution:
-            # TODO: Take into account the time a drone needs to go to the next warehouse before delivering it
-            turns[path.drone] -= path.duration()
-            if turns[path.drone] < 0:
-                continue
-            if path.is_final():
-                score += ceil(turns[path.drone] * factor)
+            paths_from_drone[path.drone].append(path)
+        
+        for drone in range(self.number_of_drones):
+            # TODO: verify if the product is available at the warehouse, else wait for it
+            # TODO: verify if the client received all products before scoring
+            turns_for_drone = self.number_of_turns
+            paths = paths_from_drone[drone]
+            last_location = None
+            for path in paths:
+                if last_location != None:
+                    turns_for_drone -= path.destination.distance_to(last_location)
+                turns_for_drone -= path.duration()
+                if turns_for_drone < 0:
+                    break
+                if path.is_final():
+                    score += ceil(turns_for_drone * factor)
         return score
 
 
