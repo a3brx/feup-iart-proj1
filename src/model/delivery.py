@@ -6,12 +6,11 @@ from model.place import Client, Warehouse
 from model.product import Product
 
 class Data:
-    def __init__(self, rows, columns, drones, turns, payload, weights, products):
+    def __init__(self, rows, columns, drones, turns, payload, weights):
         self.number_of_rows = int(rows)
         self.number_of_columns = int(columns)
         self.number_of_drones = int(drones)
         self.number_of_turns = int(turns)
-        self.number_of_products = products
         self.max_payload = int(payload)
         self.product_weights = tuple(map(int, weights))
 
@@ -29,14 +28,20 @@ class Data:
 
 
 class Delivery:
-    def __init__(self, rows, columns, drones, turns, payload, weights, warehouses, clients):
+    def __init__(self, data, warehouses, clients, solution = None):
         self.warehouses = warehouses
         self.clients = clients
         self.products = [
             product for warehouse in warehouses for product in warehouse.products
         ]
-        self.data = Data(rows, columns, drones, turns, payload, weights, len(self.products))
-        self.solution = self.initial_solution()
+        self.data = data
+        self.solution = self.initial_solution() if solution == None else solution
+
+    def copy(self):
+        copy_of_warehouses = []
+        for warehouse in self.warehouses:
+            copy_of_warehouses.append(warehouse.copy())
+        return Delivery(self.data, copy_of_warehouses, self.clients.copy(), self.solution.copy())
 
     def initial_solution(self):
         # Assign products
@@ -100,5 +105,5 @@ class Delivery:
                 order_products = input_file.readline().split()
                 new_client = Client(i, order_coordinates, order_products)
                 clients.append(new_client)
-
-            return Delivery(*problem_information, product_weights, warehouses, clients)
+            data = Data(*problem_information, product_weights)
+            return Delivery(data, warehouses, clients)

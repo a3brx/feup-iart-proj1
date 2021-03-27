@@ -5,4 +5,8 @@ class HillClimbing(LocalSearch):
         super().__init__(model)
 
     def run(self):
-        self.insert_operation()
+        for _ in range(10):
+            neighbour = self.random_neighbour()
+            print("-" * 100)
+            for path in neighbour.solution:
+                print(path)
