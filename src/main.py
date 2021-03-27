@@ -1,13 +1,12 @@
 from model.delivery import *
+from algorithm.localsearch.hillclimbing import HillClimbing
 
 if __name__ == "__main__":
-    test = "busy_day"
+    test = "example"
 
-    d = Delivery.from_input_file(test)
+    model = Delivery.from_input_file(test)
 
-    #for p in d.solution:
-    #    print(p)
+    hillclimbing = HillClimbing(model)
+    hillclimbing.run()
 
-    print("Score:", d.evaluate_solution())
-
-    d.to_output_file(test)
+    # model.to_output_file(test)

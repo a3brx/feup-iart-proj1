@@ -28,14 +28,20 @@ class Data:
 
 
 class Delivery:
-    def __init__(self, rows, columns, drones, turns, payload, weights, warehouses, clients):
-        self.data = Data(rows, columns, drones, turns, payload, weights)
+    def __init__(self, data, warehouses, clients, solution = None):
         self.warehouses = warehouses
         self.clients = clients
         self.products = [
             product for warehouse in warehouses for product in warehouse.products
         ]
-        self.solution = self.initial_solution()
+        self.data = data
+        self.solution = self.initial_solution() if solution == None else solution
+
+    def copy(self):
+        copy_of_warehouses = []
+        for warehouse in self.warehouses:
+            copy_of_warehouses.append(warehouse.copy())
+        return Delivery(self.data, copy_of_warehouses, self.clients.copy(), self.solution.copy())
 
     def initial_solution(self):
         # Assign products
@@ -44,12 +50,12 @@ class Delivery:
             if not product.product_type in products_not_assigned.keys():
                 products_not_assigned[product.product_type] = []
             products_not_assigned[product.product_type].append(product)
+        
         orders_sorted_by_size = sorted(self.clients, key=len)
         for order in orders_sorted_by_size:
             for product_type in order.wanted_products:
-                products_not_assigned_of_type = sorted(
-                    products_not_assigned[product_type], key=order.distance_to_product, reverse=True
-                )
+                products_not_assigned_of_type = products_not_assigned[product_type]
+                products_not_assigned_of_type.sort(key=order.distance_to_product, reverse=True)
                 products_not_assigned_of_type.pop().assign_order(order)
 
         solution = list(
@@ -99,5 +105,5 @@ class Delivery:
                 order_products = input_file.readline().split()
                 new_client = Client(i, order_coordinates, order_products)
                 clients.append(new_client)
-
-            return Delivery(*problem_information, product_weights, warehouses, clients)
+            data = Data(*problem_information, product_weights)
+            return Delivery(data, warehouses, clients)

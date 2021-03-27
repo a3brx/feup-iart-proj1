@@ -1,3 +1,5 @@
+from model.place import Client
+
 class Path:
     def __init__(self, product, destination=None):
         self.product = product
@@ -10,8 +12,11 @@ class Path:
     def duration(self):
         return self.product.distance_to(self.destination) + 2
 
+    def is_final(self):
+        return isinstance(self.destination, Client)
+
     def __str__(self):
-        return "Path of product " + str(self.product.product_type) + " to " + self.destination.get_string_location() + " made by drone " + str(self.drone)
+        return "Path of product " + str(self.product.product_type) + " to " + str(self.destination) + " made by drone " + str(self.drone)
 
     def get_output_string(self):
         beginning = str(self.drone) + " "

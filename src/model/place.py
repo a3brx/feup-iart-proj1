@@ -37,6 +37,12 @@ class Warehouse(Place):
         self.id = warehouse_id
         self.create_products(map(int, items))
 
+    def copy(self):
+        copy_of_items = [
+            product.product_type for product in self.products
+        ]
+        return Warehouse(self.id, (self.x, self.y), copy_of_items)
+
     def create_products(self, item_quantities):
         self.products = []
         for product_type, product_quantity in enumerate(item_quantities):
