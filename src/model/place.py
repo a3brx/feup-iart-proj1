@@ -33,15 +33,16 @@ class Place:
 
 class Warehouse(Place):
     def __init__(self, warehouse_id, coordinates, items):
+        print(items)
         super().__init__(*map(int, coordinates))
         self.id = warehouse_id
         self.create_products(map(int, items))
 
-    def copy(self):
-        copy_of_items = [
-            product.product_type for product in self.products
-        ]
-        return Warehouse(self.id, (self.x, self.y), copy_of_items)
+    def copy(self, number_of_products):
+        copy_of_items = [0 for _ in range(number_of_products)]
+        for product in self.products:
+            copy_of_items[product.product_type] += 1
+        return Warehouse(self.id, [self.x, self.y], copy_of_items)
 
     def create_products(self, item_quantities):
         self.products = []

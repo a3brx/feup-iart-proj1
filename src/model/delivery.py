@@ -24,7 +24,8 @@ class Data:
             turns[path.drone] -= path.duration()
             if turns[path.drone] < 0:
                 continue
-            score += ceil(turns[path.drone] * factor)
+            if path.is_final():
+                score += ceil(turns[path.drone] * factor)
         return score
 
 
@@ -40,7 +41,7 @@ class Delivery:
 
     def copy(self):
         copy_of_warehouses = [
-            warehouse.copy()
+            warehouse.copy(len(self.data.product_weights))
             for warehouse in self.warehouses
         ]
         copy_of_solution = [
