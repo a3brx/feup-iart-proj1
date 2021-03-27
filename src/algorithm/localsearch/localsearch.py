@@ -8,11 +8,11 @@ class LocalSearch:
     def __init__(self, model):
         self.model = model
 
-    def random_neighbour(self):
-        neighbour = self.model.copy()
+    def random_neighbour(self, neighbour):
+        result = neighbour.copy()
         functions = [
             insert_operation
         ]
-        choice(functions)(neighbour)
-        return neighbour
+        choice(functions)(result)
+        return result
 

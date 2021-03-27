@@ -1,8 +1,11 @@
 class Product:
-    def __init__(self, product, last_place):
+    def __init__(self, product, last_place, order_place = None):
         self.product_type = product
         self.last_place = last_place
-        self.order_place = None
+        self.order_place = order_place
+
+    def copy(self):
+        return Product(self.product_type, self.last_place, self.order_place)
 
     def assign_order(self, client):
         self.order_place = client

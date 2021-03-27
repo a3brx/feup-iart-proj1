@@ -1,10 +1,14 @@
 from model.place import Client
 
+
 class Path:
-    def __init__(self, product, destination=None):
+    def __init__(self, product, destination=None, drone=None):
         self.product = product
-        self.drone = None
         self.destination = destination if destination != None else product.order_place
+        self.drone = drone
+
+    def copy(self):
+        return Path(self.product.copy(), self.destination, self.drone)
 
     def assign_drone(self, drone):
         self.drone = drone

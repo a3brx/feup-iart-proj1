@@ -5,6 +5,7 @@ from model.path import Path
 from model.place import Client, Warehouse
 from model.product import Product
 
+
 class Data:
     def __init__(self, rows, columns, drones, turns, payload, weights):
         self.number_of_rows = int(rows)
@@ -28,34 +29,40 @@ class Data:
 
 
 class Delivery:
-    def __init__(self, data, warehouses, clients, solution = None):
+    def __init__(self, data, warehouses, clients, solution=None):
         self.warehouses = warehouses
         self.clients = clients
         self.products = [
             product for warehouse in warehouses for product in warehouse.products
         ]
         self.data = data
-        self.solution = self.initial_solution() if solution == None else solution
+        self.solution = self.initialize_solution() if solution == None else solution
 
     def copy(self):
-        copy_of_warehouses = []
-        for warehouse in self.warehouses:
-            copy_of_warehouses.append(warehouse.copy())
-        return Delivery(self.data, copy_of_warehouses, self.clients.copy(), self.solution.copy())
+        copy_of_warehouses = [
+            warehouse.copy()
+            for warehouse in self.warehouses
+        ]
+        copy_of_solution = [
+            path.copy()
+            for path in self.solution
+        ]
+        return Delivery(self.data, copy_of_warehouses, self.clients.copy(), copy_of_solution)
 
-    def initial_solution(self):
+    def initialize_solution(self):
         # Assign products
         products_not_assigned = {}
         for product in self.products:
             if not product.product_type in products_not_assigned.keys():
                 products_not_assigned[product.product_type] = []
             products_not_assigned[product.product_type].append(product)
-        
+
         orders_sorted_by_size = sorted(self.clients, key=len)
         for order in orders_sorted_by_size:
             for product_type in order.wanted_products:
                 products_not_assigned_of_type = products_not_assigned[product_type]
-                products_not_assigned_of_type.sort(key=order.distance_to_product, reverse=True)
+                products_not_assigned_of_type.sort(
+                    key=order.distance_to_product, reverse=True)
                 products_not_assigned_of_type.pop().assign_order(order)
 
         solution = list(
