@@ -11,7 +11,7 @@ class Path:
         return self.product.distance_to(self.destination) + 2
 
     def __str__(self):
-        return "Path of product " + str(self.product.product_type) + " to " + self.destination.get_string_location() + " made by drone " + str(self.drone)
+        return "Path of product " + str(self.product.product_type) + " to " + str(self.destination) + " made by drone " + str(self.drone)
 
     def get_output_string(self):
         beginning = str(self.drone) + " "

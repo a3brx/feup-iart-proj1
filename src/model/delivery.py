@@ -6,11 +6,12 @@ from model.place import Client, Warehouse
 from model.product import Product
 
 class Data:
-    def __init__(self, rows, columns, drones, turns, payload, weights):
+    def __init__(self, rows, columns, drones, turns, payload, weights, products):
         self.number_of_rows = int(rows)
         self.number_of_columns = int(columns)
         self.number_of_drones = int(drones)
         self.number_of_turns = int(turns)
+        self.number_of_products = products
         self.max_payload = int(payload)
         self.product_weights = tuple(map(int, weights))
 
@@ -29,12 +30,12 @@ class Data:
 
 class Delivery:
     def __init__(self, rows, columns, drones, turns, payload, weights, warehouses, clients):
-        self.data = Data(rows, columns, drones, turns, payload, weights)
         self.warehouses = warehouses
         self.clients = clients
         self.products = [
             product for warehouse in warehouses for product in warehouse.products
         ]
+        self.data = Data(rows, columns, drones, turns, payload, weights, len(self.products))
         self.solution = self.initial_solution()
 
     def initial_solution(self):
@@ -44,12 +45,12 @@ class Delivery:
             if not product.product_type in products_not_assigned.keys():
                 products_not_assigned[product.product_type] = []
             products_not_assigned[product.product_type].append(product)
+        
         orders_sorted_by_size = sorted(self.clients, key=len)
         for order in orders_sorted_by_size:
             for product_type in order.wanted_products:
-                products_not_assigned_of_type = sorted(
-                    products_not_assigned[product_type], key=order.distance_to_product, reverse=True
-                )
+                products_not_assigned_of_type = products_not_assigned[product_type]
+                products_not_assigned_of_type.sort(key=order.distance_to_product, reverse=True)
                 products_not_assigned_of_type.pop().assign_order(order)
 
         solution = list(

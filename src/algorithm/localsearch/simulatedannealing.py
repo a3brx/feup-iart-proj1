@@ -1,4 +1,4 @@
-from algorithm.localsearch import LocalSearch
+from algorithm.localsearch.localsearch import LocalSearch
 
 class SimulatedAnnealing(LocalSearch):
     def __init__(self, model):
