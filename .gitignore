@@ -1,2 +1,10 @@
+### Python ###
+# Cache
 **/__pycache__
+
+### Problem results ###
 data/*.out
+
+### VSCode ###
+# Launch file
+.vscode/launch.json
