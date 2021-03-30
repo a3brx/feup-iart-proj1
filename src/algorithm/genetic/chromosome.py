@@ -6,8 +6,8 @@ Classes:
 
 Functions:
 
-    valid_append(List[Path], [Path])
-    valid_insert(List[Path], [Path])
+    valid_append(List[Path], Path)
+    valid_insert(List[Path], Path)
 """
 
 
@@ -36,7 +36,8 @@ def valid_append(solution, path):
         - A gene that transports a product to a warehouse cannot appear after a gene that transports the same
             product to its final destination by the same drone;
         - A chromosome cannot have genes that transport a product to a warehouse it has been before;
-        - A chromosome must have one and only one gene that transports a product to its final destination.
+        - A chromosome must have one and only one gene that transports a product to its final destination;
+        - A chromsome cannot have repeated genes, this is, genes with the same product and destination.
 
     ...
     Args:
@@ -57,7 +58,8 @@ def valid_insert(solution, path):
         - A gene that transports a product to a warehouse cannot appear after a gene that transports the same
             product to its final destination by the same drone;
         - A chromosome cannot have genes that transport a product to a warehouse it has been before;
-        - A chromosome must have one and only one gene that transports a product to its final destination.
+        - A chromosome must have one and only one gene that transports a product to its final destination;
+        - A chromsome cannot have repeated genes, this is, genes with the same product and destination.
 
     ...
     Args:

@@ -4,15 +4,17 @@ from timeit import default_timer as timer
 
 class Algorithm(ABC):
 
-    def __init__(self, environment, max_time=None, max_iterations=None):
+    def __init__(self, environment, max_time=None, max_iterations=None, max_improveless_iterations=20):
         self.environment = environment
         # TODO missing products, houses and warehouses
 
         self.starting_time = timer()
         self.iterations = 0
+        self.improveless_iterations = 0
 
         self.max_time = max_time
         self.max_iterations = max_iterations
+        self.max_improveless_iterations = max_improveless_iterations
 
     @abstractmethod
     def run(self):
@@ -34,4 +36,5 @@ class Algorithm(ABC):
             boolean: True if the algorithm must stop, false otherwise
         """
         return self.max_time is not None and timer() - self.starting_time >= self.max_time \
-            or self.max_iterations is not None and self.iterations >= self.max_iterations
+            or self.max_iterations is not None and self.iterations >= self.max_iterations \
+            or self.max_improveless_iterations <= self.improveless_iterations

@@ -6,7 +6,6 @@ Classes:
 """
 
 from timeit import default_timer as timer
-import copy
 
 from algorithm.genetic.selection import RoulleteSelection
 from algorithm.genetic.crossover import OrderCrossover
@@ -24,7 +23,8 @@ class GeneticAlgorithm(Algorithm):
     or iterative.
     """
 
-    def __init__(self, environment, time=None, iterations=None, selection_method=None, crossover=None, population_size=30, generational=True):
+    def __init__(self, environment, time=None, iterations=None, max_improveless_iterations=20, selection_method=None,
+                 crossover=None, population_size=30, generational=True):
         """Instantiates a genetic algorithm.
 
         ...
@@ -32,6 +32,8 @@ class GeneticAlgorithm(Algorithm):
             environment (Environment): The environment of the problem
             time (real): The max time in seconds the algorithm should take
             iterations (integer): The max number of iterations the algorithm should take
+            max_improveless_iterations (integer): The max number of iterations without improvement the algorithm should
+                                                  take
             selection_method (SelectionMetohd): The parent selection method, this is, the method used to select parents
                                                 for crossover. Roullete selection if none is passed
             crossover (Crossover): The crossover method to reproduce between two chromosomes. The default is the order
@@ -43,7 +45,7 @@ class GeneticAlgorithm(Algorithm):
                                     generated, the weakest chromosome in the population is removed to give space to the
                                     new offspring. The default is true
         """
-        super().__init__(environment, time, iterations)
+        super().__init__(environment, time, iterations, max_improveless_iterations)
 
         self.selection_method = \
             RoulleteSelection() if selection_method is None else selection_method
@@ -63,11 +65,18 @@ class GeneticAlgorithm(Algorithm):
 
         # builds the initial solution
         population = self.random_population()
+        best_solution = self.best_solution(population)
 
-        while not self.stop_condition():
+        while not self.stop():
             if (self.generational):
                 # creates the required number of offsprings and replaces the old population
                 population = self.__new_generation(population)
+                new_best = self.best_solution(population)
+                if new_best.fitness > best_solution.fitness:
+                    best_solution = new_best
+                    self.improveless_iterations = 0
+                else:
+                    self.improveless_iterations += 1
 
             else:
                 # creates one offspring, adds it to the population, and removes the worst offspring in there
@@ -78,28 +87,30 @@ class GeneticAlgorithm(Algorithm):
                 offspring1 = self.mutate(offspring1)
                 offspring2 = self.mutate(offspring2)
 
-                population.append(Chromosome(
-                    offspring1, self.evaluate(offspring1)))
-                population.append(Chromosome(
-                    offspring2, self.evaluate(offspring2)))
+                c1 = Chromosome(offspring1, self.evaluate(offspring1))
+                c2 = Chromosome(offspring1, self.evaluate(offspring2))
+                population.append(c1)
+                population.append(c2)
 
                 population.remove(
                     min(population, key=lambda chromosome: chromosome.fitness))
                 population.remove(
                     min(population, key=lambda chromosome: chromosome.fitness))
+
+                best_new = max(
+                    [c1, c2], key=lambda chromosome: chromosome.fitness)
+                if best_new.fitness > best_solution.fitness:
+                    best_solution = best_new
+                    self.improveless_iterations = 0
+                else:
+                    self.improveless_iterations += 1
 
         # gets the best solution of the current population and returns it
-        # TODO maybe store overall best solution instead of this one
-        solution = self.best_solution(population)
-        return copy.deepcopy(solution)
+        return best_solution
 
     def mutate(self, chromosome):
         # TODO
         return chromosome
-
-    def stop_condition(self):
-        # TODO complete with a number of iterations without improving or something
-        return super().stop()
 
     def random_population(self):
         """Builds a random population with chromosomes with random solutions.
