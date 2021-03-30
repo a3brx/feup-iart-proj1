@@ -19,6 +19,7 @@ class Product:
     def distance_to(self, place):
         return self.last_place.distance_to(place)
 
+
     def __str__(self):
         result_string = "Product of type " + str(self.product_type)
         if self.is_finished():

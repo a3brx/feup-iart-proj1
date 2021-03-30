@@ -20,7 +20,7 @@ class Path:
         return isinstance(self.destination, Client)
 
     def __str__(self):
-        return "Path of product " + str(self.product.product_type) + " to " + str(self.destination) + " made by drone " + str(self.drone)
+        return "Path of product " + str(id(self.product)) + " to " + str(self.destination) + " made by drone " + str(self.drone)
 
     def get_output_string(self):
         beginning = str(self.drone) + " "
