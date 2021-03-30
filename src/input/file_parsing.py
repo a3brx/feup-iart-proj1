@@ -16,11 +16,11 @@ class FileParsing:
             raise Exception('Could not read file')
 
         environment = FileParsing.__parse_environment(contents)
-        products = FileParsing.__parse_products(contents)
-        warehouses = FileParsing.__parse_warehouses(contents)
+        product_weights = FileParsing.__parse_products(contents)
+        warehouses = FileParsing.__parse_warehouses(contents, product_weights)
         orders = FileParsing.__parse_orders(contents)
 
-        return Simulation(environment, products, warehouses, orders)
+        return Simulation(environment, product_weights, warehouses, orders)
 
     def __parse_environment(contents):
         environment_params = contents[0].split(' ')
@@ -29,17 +29,16 @@ class FileParsing:
                            int(environment_params[2]), int(environment_params[4]))
 
     def __parse_products(contents):
-        product_count = int(contents[1])
         product_params = list(map(int, contents[2].split(' ')))
 
         products = []
 
-        for type, weight in zip(range(0, product_count), product_params):
-            products.append(Product(type, weight))
+        for weight in product_params:
+            products.append(weight)
 
         return products
 
-    def __parse_warehouses(contents):
+    def __parse_warehouses(contents, product_weights):
         warehouses_count = int(contents[3])
         warehouses_lines = contents[4:4 + warehouses_count*2]
 
@@ -50,7 +49,13 @@ class FileParsing:
             product_params = list(
                 map(int, warehouses_lines[i*2 + 1].split(' ')))
 
-            warehouses.append(Warehouse(location_params, product_params))
+            products = []
+            for product_type, product_count in zip(range(0, len(product_params)), product_params):
+                for i in range(0, product_count):
+                    products.append(
+                        Product(product_type, product_weights[product_type]))
+
+            warehouses.append(Warehouse(location_params, products))
 
         return warehouses
 
@@ -62,9 +67,9 @@ class FileParsing:
         orders = []
 
         for i in range(0, orders_counts):
-            location_params = tuple(map(int, orders_lines[i*2].split(' ')))
+            location_params = tuple(map(int, orders_lines[i*3].split(' ')))
             product_types_params = list(
-                map(int, orders_lines[i*2 + 2].split(' ')))
+                map(int, orders_lines[i*3 + 2].split(' ')))
 
             orders.append(
                 Order(location_params, product_types_params))
