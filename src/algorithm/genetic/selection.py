@@ -9,7 +9,6 @@ Classes:
 
 from abc import ABC, abstractmethod
 import random
-import numpy as np
 
 
 class SelectionMethod(ABC):

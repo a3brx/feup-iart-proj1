@@ -4,9 +4,8 @@ from timeit import default_timer as timer
 
 class Algorithm(ABC):
 
-    def __init__(self, environment, max_time=None, max_iterations=None, max_improveless_iterations=20):
-        self.environment = environment
-        # TODO missing products, houses and warehouses
+    def __init__(self, simulation, max_time=None, max_iterations=None, max_improveless_iterations=20):
+        self.simulation = simulation
 
         self.starting_time = timer()
         self.iterations = 0
@@ -21,7 +20,9 @@ class Algorithm(ABC):
         pass
 
     def random_solution(self):
-        # TODO
+        orders = self.simulation.orders.copy()
+
+        orders.sort(key=lambda order: self.simulation.order_weight(order))
         return ["a", "b", "c"]
 
     def evaluate(self, solution):

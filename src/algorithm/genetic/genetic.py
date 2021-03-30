@@ -19,22 +19,22 @@ class GeneticAlgorithm(Algorithm):
     In genetic algorithms, solutions (called chromosomes) suffer mutations and are crossover between themselves,
     so that new solutions are generated.
 
-    Holds its environment, time and iterations ceil, parent selection method, population size and if it is generational
+    Holds its simulation, time and iterations ceil, parent selection method, population size and if it is generational
     or iterative.
     """
 
-    def __init__(self, environment, time=None, iterations=None, max_improveless_iterations=20, selection_method=None,
+    def __init__(self, simulation, time=None, iterations=None, max_improveless_iterations=20, selection_method=None,
                  crossover=None, population_size=30, generational=True):
         """Instantiates a genetic algorithm.
 
         ...
         Args:
-            environment (Environment): The environment of the problem
+            simulation (Simulation): The problem simulation
             time (real): The max time in seconds the algorithm should take
             iterations (integer): The max number of iterations the algorithm should take
             max_improveless_iterations (integer): The max number of iterations without improvement the algorithm should
                                                   take
-            selection_method (SelectionMetohd): The parent selection method, this is, the method used to select parents
+            selection_method (SelectionMethod): The parent selection method, this is, the method used to select parents
                                                 for crossover. Roullete selection if none is passed
             crossover (Crossover): The crossover method to reproduce between two chromosomes. The default is the order
                                    crossover
@@ -45,7 +45,7 @@ class GeneticAlgorithm(Algorithm):
                                     generated, the weakest chromosome in the population is removed to give space to the
                                     new offspring. The default is true
         """
-        super().__init__(environment, time, iterations, max_improveless_iterations)
+        super().__init__(simulation, time, iterations, max_improveless_iterations)
 
         self.selection_method = \
             RoulleteSelection() if selection_method is None else selection_method

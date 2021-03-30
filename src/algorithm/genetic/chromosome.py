@@ -32,12 +32,12 @@ class Chromosome:
 def valid_append(solution, path):
     """Verifies if the appending of a path to a solution (or the appending of a gene to a chromosome) is valid.
 
-    For a chromosome/solution to be valid, the following points have to be veirified:
+    For a chromosome/solution to be valid, the following points have to be verified:
         - A gene that transports a product to a warehouse cannot appear after a gene that transports the same
             product to its final destination by the same drone;
         - A chromosome cannot have genes that transport a product to a warehouse it has been before;
         - A chromosome must have one and only one gene that transports a product to its final destination;
-        - A chromsome cannot have repeated genes, this is, genes with the same product and destination.
+        - A chromosome cannot have repeated genes, this is, genes with the same product and destination.
 
     ...
     Args:
@@ -54,12 +54,12 @@ def valid_append(solution, path):
 def valid_insert(solution, path):
     """Verifies if the insertion of a path at the beginning of a solution is valid.
 
-    For a chromosome/solution to be valid, the following points have to be veirified:
+    For a chromosome/solution to be valid, the following points have to be verified:
         - A gene that transports a product to a warehouse cannot appear after a gene that transports the same
             product to its final destination by the same drone;
         - A chromosome cannot have genes that transport a product to a warehouse it has been before;
         - A chromosome must have one and only one gene that transports a product to its final destination;
-        - A chromsome cannot have repeated genes, this is, genes with the same product and destination.
+        - A chromosome cannot have repeated genes, this is, genes with the same product and destination.
 
     ...
     Args:
