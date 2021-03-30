@@ -1,9 +1,8 @@
-"""Holds the genetic approach for the solution of the problem
+"""Holds the genetic approach for the solution of the problem.
 
 Classes:
 
     GeneticAlgorithm
-    Chromosome
 """
 
 from timeit import default_timer as timer
@@ -11,6 +10,7 @@ import copy
 
 from algorithm.genetic.selection import RoulleteSelection
 from algorithm.genetic.crossover import OrderCrossover
+from algorithm.genetic.chromosome import Chromosome
 from algorithm.algorithm import Algorithm
 
 
@@ -45,9 +45,10 @@ class GeneticAlgorithm(Algorithm):
         """
         super().__init__(environment, time, iterations)
 
-        self.selection_method = RoulleteSelection(
-        ) if selection_method is None else selection_method
+        self.selection_method = \
+            RoulleteSelection() if selection_method is None else selection_method
         self.crossover = OrderCrossover() if crossover is None else crossover
+
         self.population_size = population_size
         self.generational = generational
 
@@ -71,9 +72,19 @@ class GeneticAlgorithm(Algorithm):
             else:
                 # creates one offspring, adds it to the population, and removes the worst offspring in there
                 (parent1, parent2) = self.selection_method.run(population)
-                offspring = self.crossover.run(parent1, parent2)
-                offspring = self.mutate(offspring)
-                population.append(offspring)
+                (offspring1, offspring2) = self.crossover.run(
+                    parent1.solution, parent2.solution)
+
+                offspring1 = self.mutate(offspring1)
+                offspring2 = self.mutate(offspring2)
+
+                population.append(Chromosome(
+                    offspring1, self.evaluate(offspring1)))
+                population.append(Chromosome(
+                    offspring2, self.evaluate(offspring2)))
+
+                population.remove(
+                    min(population, key=lambda chromosome: chromosome.fitness))
                 population.remove(
                     min(population, key=lambda chromosome: chromosome.fitness))
 
@@ -98,7 +109,7 @@ class GeneticAlgorithm(Algorithm):
             list[Chromosome]: A list of chromosomes with random solutions.
         """
         res = []
-        for i in range(self.population_size):
+        for _ in range(self.population_size):
             solution = self.random_solution()
             chromosome = Chromosome(solution, self.evaluate(solution))
 
@@ -129,28 +140,11 @@ class GeneticAlgorithm(Algorithm):
             list[Chrosome]: A new chrosome generation
         """
         new_population = []
-        for _ in range(self.population_size):
+        for _ in range(self.population_size // 2):
             (parent1, parent2) = self.selection_method.run(population)
-            offspring = self.crossover.run(parent1, parent2)
-            offspring = self.mutate(offspring)
-            new_population.append(offspring)
+            (offspring1, offspring2) = self.crossover.run(parent1, parent2)
+            offspring1 = self.mutate(offspring1)
+            offspring2 = self.mutate(offspring2)
+            new_population.append(offspring1, offspring2)
 
         return new_population
-
-
-class Chromosome:
-    """Represents a solution to the problem.
-
-    Holds the solution and its fitness/evaluation.
-    """
-
-    def __init__(self, solution, fitness):
-        """Instantiates a chromosome.
-
-        ...
-        Args:
-            solution (List[Path]): The list of paths/steps of a solution
-            fitness (integer): The fitness/evaluation of the solution
-        """
-        self.solution = solution
-        self.fitness = fitness
