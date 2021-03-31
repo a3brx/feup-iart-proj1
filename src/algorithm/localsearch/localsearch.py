@@ -18,4 +18,9 @@ class LocalSearch:
         ]
         choice(functions)(result)
         return result
+    
+    def print_solution(self, solution, evaluation):
+        for path in solution:
+            print(path)
+        print("Evaluation:", evaluation)
 

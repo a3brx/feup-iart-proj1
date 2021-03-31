@@ -12,7 +12,7 @@ class HillClimbing(LocalSearch):
             print(path)
         print("Evaluation:", neighbour_evaluation)
         it = 0
-        while it < 1000:
+        while it < 100:
             new_neighbour = self.random_neighbour(neighbour)
             # print(new_neighbour)
             new_neighbour_evaluation = new_neighbour.evaluate_solution()
