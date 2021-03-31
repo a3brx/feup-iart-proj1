@@ -5,10 +5,11 @@ Classes:
     GeneticAlgorithm
 """
 
+import copy
 from timeit import default_timer as timer
 
 from algorithm.genetic.selection import RoulleteSelection
-from algorithm.genetic.crossover import OrderCrossover
+from algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
 from algorithm.genetic.chromosome import Chromosome
 from algorithm.algorithm import Algorithm
 
@@ -49,7 +50,7 @@ class GeneticAlgorithm(Algorithm):
 
         self.selection_method = \
             RoulleteSelection() if selection_method is None else selection_method
-        self.crossover = OrderCrossover() if crossover is None else crossover
+        self.crossover = OnePointCrossover() if crossover is None else crossover
 
         self.population_size = population_size
         self.generational = generational
@@ -88,7 +89,7 @@ class GeneticAlgorithm(Algorithm):
                 offspring2 = self.mutate(offspring2)
 
                 c1 = Chromosome(offspring1, self.evaluate(offspring1))
-                c2 = Chromosome(offspring1, self.evaluate(offspring2))
+                c2 = Chromosome(offspring2, self.evaluate(offspring2))
                 population.append(c1)
                 population.append(c2)
 
@@ -123,8 +124,7 @@ class GeneticAlgorithm(Algorithm):
         for _ in range(self.population_size):
             solution = self.random_solution()
             chromosome = Chromosome(solution, self.evaluate(solution))
-
-            res.append(chromosome)
+            res.append(copy.deepcopy(chromosome))
 
         return res
 
@@ -133,29 +133,36 @@ class GeneticAlgorithm(Algorithm):
 
         ...
         Args:
-            population (list[Chromosome]): The list of chromsomes that constitute the population
+            population (list[Chromosome]): The list of Chromosomes that constitute the population
 
         Returns:
-            Chromsome: The best chromosome
+            Chromosome: The best chromosome
         """
         return max(population, key=lambda chromosome: chromosome.fitness)
 
     def __new_generation(self, population):
-        """Gets a new generation using crossover between chrosomes in a given population.
+        """Gets a new generation using crossover between Chromosomes in a given population.
 
         ...
         Args:
-            population (list[Chrosome]): The current population
+            population (list[Chromosome]): The current population
 
         Returns:
-            list[Chrosome]: A new chrosome generation
+            list[Chromosome]: A new Chromosome generation
         """
         new_population = []
         for _ in range(self.population_size // 2):
-            (parent1, parent2) = self.selection_method.run(population)
-            (offspring1, offspring2) = self.crossover.run(parent1, parent2)
+            parent1, parent2 = self.selection_method.run(population)
+            offspring1, offspring2 = self.crossover.run(
+                parent1.solution, parent2.solution)
+
             offspring1 = self.mutate(offspring1)
             offspring2 = self.mutate(offspring2)
-            new_population.append(offspring1, offspring2)
+
+            c1 = Chromosome(offspring1, self.evaluate(offspring1))
+            c2 = Chromosome(offspring2, self.evaluate(offspring2))
+
+            new_population.append(c1)
+            new_population.append(c2)
 
         return new_population

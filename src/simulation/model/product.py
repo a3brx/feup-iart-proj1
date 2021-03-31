@@ -15,3 +15,6 @@ class Product:
 
     def __repr__(self):
         return self.__str__()
+
+    def __eq__(self, other):
+        return self.type == other.type
