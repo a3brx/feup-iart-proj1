@@ -3,15 +3,20 @@ from random import random
 
 from algorithm.localsearch.localsearch import LocalSearch
 
+
 class SimulatedAnnealing(LocalSearch):
     def __init__(self, model):
         super().__init__(model)
+        self.reset_temperature()
 
-    def initial_temperature(self):
-        return 1000
+    def reset_temperature(self):
+        self.temperature = 1000
 
-    def schedule(self, temperature):
-        return 0.9 * temperature
+    def schedule(self):
+        self.temperature *= 0.95
+
+    def accept_function(self, delta):
+        return delta > 0 or (delta < 0 and e ** (delta / self.temperature) > random())
 
     def run(self):
         # Get first solution
@@ -19,17 +24,17 @@ class SimulatedAnnealing(LocalSearch):
         neighbour_evaluation = neighbour.evaluate_solution()
         self.print_solution(neighbour.solution, neighbour_evaluation)
 
-        temperature = self.initial_temperature()
+        self.reset_temperature()
         it = 0
 
         while it < 100:
-            temperature = self.schedule(temperature)
+            self.schedule()
             new_neighbour = self.random_neighbour(neighbour)
             new_neighbour_evaluation = new_neighbour.evaluate_solution()
 
             delta = new_neighbour_evaluation - neighbour_evaluation
 
-            if delta > 0 or (delta < 0 and e ** (delta / temperature) > random()):
+            if self.accept_function(delta):
                 neighbour, neighbour_evaluation = new_neighbour, new_neighbour_evaluation
                 print("-" * 100)
                 self.print_solution(neighbour.solution, neighbour_evaluation)

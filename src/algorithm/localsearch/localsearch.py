@@ -16,7 +16,9 @@ class LocalSearch:
             remove_operation,
             switch_operation_drone
         ]
-        choice(functions)(result)
+        while True:
+            if choice(functions)(result):
+                break
         return result
     
     def print_solution(self, solution, evaluation):

@@ -39,6 +39,7 @@ def swap_operations(model):
     # Choose an operation and make the swap
     second_operation_index = choice(possible_operations)[0]
     model.solution[first_operation_index], model.solution[second_operation_index] = model.solution[second_operation_index], model.solution[first_operation_index]
+    return True
 
 
 def insert_operation(model):
@@ -57,7 +58,7 @@ def insert_operation(model):
         lambda x: x.product == new_path.product, model.solution)])
     not_used_warehouses = list(all_warehouses.difference(used_warehouses))
     if not not_used_warehouses:
-        return None
+        return False
     new_warehouse = choice(not_used_warehouses)
 
     # Change the distination of the predecessor
@@ -66,6 +67,7 @@ def insert_operation(model):
     # Insert the new operation that has the same destination as the predecessor
     model.solution.insert(
         randrange(predecessor_path_index + 1, solution_length + 1), new_path)
+    return True
 
 
 def remove_operation(model):
@@ -74,11 +76,12 @@ def remove_operation(model):
     valid_operations_to_remove = tuple(
         filter(lambda x: not model.solution[x].is_final(), range(solution_length)))
     if not valid_operations_to_remove:
-        return None
+        return False
     index_to_remove = choice(valid_operations_to_remove)
 
     # Remove the element
     model.solution.pop(index_to_remove)
+    return True
 
 
 def switch_operation_drone(model):
@@ -89,3 +92,4 @@ def switch_operation_drone(model):
     while new_drone == old_drone:
         new_drone = randrange(model.data.number_of_drones)
     model.solution[operation_to_switch].drone = new_drone
+    return True
