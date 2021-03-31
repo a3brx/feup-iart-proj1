@@ -10,6 +10,12 @@ class Product:
         self.type = type
         self.weight = weight
 
+    def __eq__(self, other):
+        if isinstance(other, Product):
+            return self.id == other.id
+
+        return False
+
     def __str__(self):
         return f'p{self.id} of type {self.type}'
 
