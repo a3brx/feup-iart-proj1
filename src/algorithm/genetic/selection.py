@@ -53,7 +53,7 @@ class RoulleteSelection(SelectionMethod):
 
         # random.sample is used since the chromosome fitness is required to be an integer
         result_list = random.sample(
-            population,
+            population=population,
             counts=[chromosome.fitness for chromosome in population],
             k=2
         )

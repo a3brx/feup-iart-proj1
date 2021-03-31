@@ -1,3 +1,6 @@
+from simulation.model.order import Order
+
+
 class Transportation:
 
     def __init__(self, product, drone, source, destination):
@@ -16,11 +19,21 @@ class Transportation:
         self.source = source
         self.destination = destination
 
+    def is_final(self):
+        return isinstance(self.destination, Order)
+
     def __str__(self):
-        return f'{self.product} with drone {self.drone} to {self.destination}'
+        identifier = 'o' if isinstance(self.destination, Order) else 'w'
+        return f'p{self.product.id} d{self.drone} w{self.source.id} {identifier}{self.destination.id}'
 
     def __repr__(self):
         return self.__str__()
+
+    def hash_source(self):
+        return hash((self.product.id, self.source.id))
+
+    def hash_destination(self):
+        return hash((self.product.id, self.destination.id))
 
 
 class Delivery:
@@ -90,6 +103,9 @@ class Delivery:
         self.products.append(product)
         self.__weight += product.weight
 
+    def is_final(self):
+        return isinstance(self.destination, Order)
+
     def __update_weight(self):
         self.__weight = 0
         for product in self.products:
@@ -105,7 +121,9 @@ class Delivery:
         self.__product_types = len(types)
 
     def __str__(self):
-        return f'{self.products} with drone {self.drone} to {self.destination}'
+        identifier = 'o' if isinstance(self.destination, Order) else 'w'
+        product_ids = [product.id for product in self.products]
+        return f'p{product_ids} d{self.drone} w{self.source.id} {identifier}{self.destination.id}'
 
     def __repr__(self):
         return self.__str__()

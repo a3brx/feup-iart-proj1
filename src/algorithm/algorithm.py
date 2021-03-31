@@ -3,6 +3,7 @@ import math
 import random
 from timeit import default_timer as timer
 import copy
+import itertools
 
 from simulation.model.transportation import Delivery
 from simulation.simulation import Simulation
@@ -71,13 +72,17 @@ class Algorithm(ABC):
             deliveries.append(Delivery.build_deliveries(
                 job, self.simulation.environment.drone_max_payload))
 
+        print(len(solution), len(list(itertools.chain.from_iterable(deliveries))))
+
         score = 0
         # copies the orders to not complete the original ones
-        order_delivers = copy.deepcopy(self.simulation.orders)
+        delivered_orders = copy.deepcopy(self.simulation.orders)
+
+        print(solution)
 
         for drone in deliveries:
             # the starting location of the drone
-            location = (0, 0)
+            location = self.simulation.warehouses[0].location
             total_turns = 0
 
             # completes all the deliveries of the drone
@@ -91,11 +96,16 @@ class Algorithm(ABC):
                     break
 
                 # updates the order of that delivery if it applies
-                updated_order = Simulation.update_order(
-                    order_delivers, delivery)
-                if updated_order is not None and updated_order.is_completed():
-                    score += single_score(total_turns,
-                                          self.simulation.environment.turns)
+                Simulation.update_order(
+                    delivered_orders, delivery, total_turns)
+
+        for order in delivered_orders:
+            if order.is_complete():
+                score += single_score(order.turns,
+                                      self.simulation.environment.turns)
+
+        if score == 0:
+            score = 1
 
         return score
 

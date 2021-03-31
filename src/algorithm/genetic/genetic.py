@@ -6,9 +6,10 @@ Classes:
 """
 
 import copy
-from timeit import default_timer as timer
+import random
 
-from algorithm.genetic.selection import RoulleteSelection
+from timeit import default_timer as timer
+from algorithm.genetic.selection import RoulleteSelection, TournamentSelection
 from algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
 from algorithm.genetic.chromosome import Chromosome
 from algorithm.algorithm import Algorithm
@@ -73,6 +74,7 @@ class GeneticAlgorithm(Algorithm):
                 # creates the required number of offsprings and replaces the old population
                 population = self.__new_generation(population)
                 new_best = self.best_solution(population)
+                print(best_solution.fitness, new_best.fitness)
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
@@ -98,10 +100,12 @@ class GeneticAlgorithm(Algorithm):
                 population.remove(
                     min(population, key=lambda chromosome: chromosome.fitness))
 
-                best_new = max(
+                new_best = max(
                     [c1, c2], key=lambda chromosome: chromosome.fitness)
-                if best_new.fitness > best_solution.fitness:
-                    best_solution = best_new
+
+                print(best_solution.fitness, new_best.fitness)
+                if new_best.fitness > best_solution.fitness:
+                    best_solution = new_best
                     self.improveless_iterations = 0
                 else:
                     self.improveless_iterations += 1
@@ -121,10 +125,22 @@ class GeneticAlgorithm(Algorithm):
             list[Chromosome]: A list of chromosomes with random solutions.
         """
         res = []
-        for _ in range(self.population_size):
-            solution = self.random_solution()
+
+        solution = self.random_solution()
+
+        chromosome = Chromosome(solution, self.evaluate(solution))
+        res.append(chromosome)
+
+        for _ in range(self.population_size - 1):
+            solution = copy.deepcopy(solution)
+            random.shuffle(solution)
+
+            for transportation in solution:
+                transportation.drone = self.simulation.random_drone()
+
             chromosome = Chromosome(solution, self.evaluate(solution))
-            res.append(copy.deepcopy(chromosome))
+            print('fitness')
+            res.append(chromosome)
 
         return res
 
@@ -150,6 +166,9 @@ class GeneticAlgorithm(Algorithm):
         Returns:
             list[Chromosome]: A new Chromosome generation
         """
+
+        print('new generation')
+
         new_population = []
         for _ in range(self.population_size // 2):
             parent1, parent2 = self.selection_method.run(population)
@@ -164,5 +183,7 @@ class GeneticAlgorithm(Algorithm):
 
             new_population.append(c1)
             new_population.append(c2)
+
+            print("new offspring")
 
         return new_population

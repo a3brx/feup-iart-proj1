@@ -75,21 +75,25 @@ class Simulation:
 
         return (turns, delivery.destination.location)
 
-    def update_order(orders, delivery):
+    def update_order(orders, delivery, turns):
         """Updates the remaining products in an order, according to a delivery.
 
         ...
         Args:
             orders (list[Order]): The list of orders to update
             delivery (Delivery): The delivery to take into account
+            turns (integer): The current number of turns of the simulation
 
         Returns:
             Order: The order that was completed, None if none was
         """
+
         for order in orders:
-            if order.location == delivery.destination.location:
+            if delivery.is_final() and delivery.destination.id == order.id:
                 for product in delivery.products:
                     order.remove(product.type)
-                    return order
+                    order.visit(turns)
+
+                return order
 
         return None
