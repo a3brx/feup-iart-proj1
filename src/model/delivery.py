@@ -51,15 +51,11 @@ class Delivery:
         self.solution = self.initialize_solution() if solution == None else solution
 
     def copy(self):
-        copy_of_warehouses = [
-            warehouse.copy(len(self.data.product_weights))
-            for warehouse in self.warehouses
-        ]
         copy_of_solution = [
             path.copy()
             for path in self.solution
         ]
-        return Delivery(self.data, copy_of_warehouses, self.clients.copy(), copy_of_solution)
+        return Delivery(self.data, self.warehouses, self.clients.copy(), copy_of_solution)
 
     def initialize_solution(self):
         # Assign products

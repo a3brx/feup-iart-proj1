@@ -13,7 +13,7 @@ class SimulatedAnnealing(LocalSearch):
         self.temperature = 1000
 
     def schedule(self):
-        self.temperature *= 0.95
+        self.temperature *= 0.9
 
     def accept_function(self, delta):
         return delta > 0 or (delta < 0 and e ** (delta / self.temperature) > random())

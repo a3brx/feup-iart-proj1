@@ -8,7 +8,7 @@ class Path:
         self.drone = drone
 
     def copy(self):
-        return Path(self.product.copy(), self.destination, self.drone)
+        return Path(self.product, self.destination, self.drone)
 
     def assign_drone(self, drone):
         self.drone = drone

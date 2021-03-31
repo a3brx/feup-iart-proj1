@@ -49,24 +49,31 @@ def insert_operation(model):
     predecessor_path = model.solution[predecessor_path_index]
 
     # Create a new node with a random drone
-    new_path = Path(predecessor_path.product, predecessor_path.destination)
-    new_path.assign_drone(randrange(model.data.number_of_drones))
+    new_path = Path(predecessor_path.product, predecessor_path.destination, randrange(model.data.number_of_drones))
 
     # Warehouse must be not in any other path of that product
     all_warehouses = set(model.warehouses)
-    used_warehouses = set([x.destination for x in filter(
-        lambda x: x.product == new_path.product, model.solution)])
+    used_warehouses = set([
+        x.destination for x in
+        filter(lambda x: x.product == new_path.product, model.solution)
+    ])
     not_used_warehouses = list(all_warehouses.difference(used_warehouses))
     if not not_used_warehouses:
         return False
     new_warehouse = choice(not_used_warehouses)
 
-    # Change the distination of the predecessor
+    # Change the destination of the predecessor
     predecessor_path.destination = new_warehouse
+
+    if new_path.is_final():
+        last_index = solution_length + 1
+    else:
+        last_index = next((i for i in range(len(model.solution) - 1, -1) if model.solution[i].is_final() and model.solution[i].product == new_path.product), None)
 
     # Insert the new operation that has the same destination as the predecessor
     model.solution.insert(
-        randrange(predecessor_path_index + 1, solution_length + 1), new_path)
+        randrange(predecessor_path_index + 1, last_index), new_path
+    )
     return True
 
 
