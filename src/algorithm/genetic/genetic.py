@@ -69,15 +69,20 @@ class GeneticAlgorithm(Algorithm):
         self.starting_time = timer()
 
         # builds the initial solution
+        print('Building initial solution')
         population = self.random_population()
         best_solution = self.best_solution(population)
+
+        print('Starting to make sex')
 
         while not self.stop():
             if (self.generational):
                 # creates the required number of offsprings and replaces the old population
                 population = self.__new_generation(population)
                 new_best = self.best_solution(population)
-                print(best_solution.fitness, new_best.fitness)
+                self.iterations += 1
+                print(
+                    f'Generation {self.iterations} max fitness {new_best.fitness} global fitness {best_solution.fitness}')
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
@@ -106,7 +111,6 @@ class GeneticAlgorithm(Algorithm):
                 new_best = max(
                     [c1, c2], key=lambda chromosome: chromosome.fitness)
 
-                print(best_solution.fitness, new_best.fitness)
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
@@ -129,7 +133,6 @@ class GeneticAlgorithm(Algorithm):
             op_count = max(1, len(chromosome) // 100)
 
             for _ in range(0, op_count):
-                print(mutation_function.__name__)
                 mutated_chromosome = mutation_function(
                     chromosome, self.simulation)
 
@@ -159,7 +162,6 @@ class GeneticAlgorithm(Algorithm):
                 transportation.drone = self.simulation.random_drone()
 
             chromosome = Chromosome(solution, self.evaluate(solution))
-            print('fitness')
             res.append(chromosome)
 
         return res
@@ -186,9 +188,6 @@ class GeneticAlgorithm(Algorithm):
         Returns:
             list[Chromosome]: A new Chromosome generation
         """
-
-        print('new generation')
-
         new_population = []
         for _ in range(self.population_size // 2):
             parent1, parent2 = self.selection_method.run(population)
@@ -203,7 +202,5 @@ class GeneticAlgorithm(Algorithm):
 
             new_population.append(c1)
             new_population.append(c2)
-
-            print("new offspring")
 
         return new_population

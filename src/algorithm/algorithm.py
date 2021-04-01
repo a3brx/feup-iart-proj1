@@ -71,9 +71,7 @@ class Algorithm(ABC):
         for job in drone_jobs:
             deliveries.append(Delivery.build_deliveries(
                 job, self.simulation.environment.drone_max_payload))
-
-        print(len(solution), len(list(itertools.chain.from_iterable(deliveries))))
-
+                
         score = 0
         # copies the orders to not complete the original ones
         delivered_orders = copy.deepcopy(self.simulation.orders)
