@@ -1,3 +1,4 @@
+import copy
 import math
 from random import randrange
 from simulation.model.warehouse import Warehouse

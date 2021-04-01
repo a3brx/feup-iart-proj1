@@ -7,13 +7,13 @@ Classes:
 
 import copy
 import random
-import algorithm.operation.mutation as mutations
-
 from timeit import default_timer as timer
-from algorithm.genetic.selection import RoulleteSelection, TournamentSelection
-from algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
-from algorithm.genetic.chromosome import Chromosome
+
+import algorithm.operation.mutation as mutations
 from algorithm.algorithm import Algorithm
+from algorithm.genetic.chromosome import Chromosome
+from algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
+from algorithm.genetic.selection import RoulleteSelection, TournamentSelection
 
 
 class GeneticAlgorithm(Algorithm):
@@ -91,8 +91,8 @@ class GeneticAlgorithm(Algorithm):
 
             else:
                 # creates one offspring, adds it to the population, and removes the worst offspring in there
-                (parent1, parent2) = self.selection_method.run(population)
-                (offspring1, offspring2) = self.crossover.run(
+                parent1, parent2 = self.selection_method.run(population)
+                offspring1, offspring2 = self.crossover.run(
                     parent1.solution, parent2.solution)
 
                 offspring1 = self.mutate(offspring1)
@@ -153,20 +153,25 @@ class GeneticAlgorithm(Algorithm):
         """
         res = []
 
+        # creates an initial solution
         solution = self.random_solution()
-
         chromosome = Chromosome(solution, self.evaluate(solution))
         res.append(chromosome)
 
         for _ in range(self.population_size - 1):
-            solution = copy.deepcopy(solution)
-            random.shuffle(solution)
-
+            # creates new solutions based on the initial one
+            # changing its order and its drones
+            new_solution = []
             for transportation in solution:
-                transportation.drone = self.simulation.random_drone()
+                new_transportation = copy.copy(transportation)
+                new_transportation.drone = self.simulation.random_drone()
+                new_solution.append(new_transportation)
 
-            chromosome = Chromosome(solution, self.evaluate(solution))
+            random.shuffle(new_solution)
+
+            chromosome = Chromosome(new_solution, self.evaluate(new_solution))
             res.append(chromosome)
+            solution = new_solution
 
         return res
 

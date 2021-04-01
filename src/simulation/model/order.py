@@ -23,6 +23,9 @@ class Order(Place):
     def remove(self, product_type):
         self.product_types.remove(product_type)
 
+    def __eq__(self, other):
+        return self.id == other.id
+
     def __str__(self):
         return f'o{self.id} {self.product_types} at {self.location}'
 

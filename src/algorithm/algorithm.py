@@ -43,7 +43,7 @@ class Algorithm(ABC):
 
         for order in simulation.orders:
             for product_type in order.product_types:
-                (warehouse, product) = simulation.closest_warehouse(
+                warehouse, product = simulation.closest_warehouse(
                     order.location, product_type)
 
                 drone = simulation.random_drone()

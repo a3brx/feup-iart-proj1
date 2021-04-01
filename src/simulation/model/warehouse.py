@@ -29,6 +29,9 @@ class Warehouse(Place):
     def increase_product(self, product):
         self.products.append(product)
 
+    def __eq__(self, other):
+        return self.id == other.id
+
     def __str__(self):
         return f'w{self.id}'
 

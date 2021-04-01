@@ -22,19 +22,18 @@ class Transportation:
     def is_final(self):
         return isinstance(self.destination, Order)
 
-    def __str__(self):
-        identifier = 'o' if isinstance(self.destination, Order) else 'w'
-        return f'p{self.product.id} d{self.drone} w{self.source.id} {identifier}{self.destination.id}'
-
-    def __repr__(self):
-        return self.__str__()
-
     def hash_source(self):
         return hash((self.product.id, self.source.id))
 
     def hash_destination(self):
         return hash((self.product.id, self.destination.id))
 
+    def __str__(self):
+        identifier = 'o' if isinstance(self.destination, Order) else 'w'
+        return f'p{self.product.id} d{self.drone} w{self.source.id} {identifier}{self.destination.id}'
+
+    def __repr__(self):
+        return self.__str__()
 
 class Delivery:
     """Treats the delivery of a set of products to a destination.
