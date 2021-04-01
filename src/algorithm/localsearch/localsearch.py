@@ -23,6 +23,6 @@ class LocalSearch:
         return result
 
     def print_solution(self, solution, evaluation):
-        for path in solution:
-            print(path)
+        #for path in solution:
+        #    print(path)
         print("Evaluation:", evaluation)

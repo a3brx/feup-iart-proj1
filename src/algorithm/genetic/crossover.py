@@ -8,10 +8,9 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
+import algorithm.operation.restriction as restriction
 import copy
 import random
-
-from algorithm.genetic import chromosome
 
 
 class Crossover(ABC):
@@ -70,17 +69,33 @@ class OnePointCrossover(Crossover):
         # starts the offsprings with the first part of the parents
         offspring1 = []
         offspring2 = []
+
+        offspring1_hashes_source = set()
+        offspring2_hashes_source = set()
+
+        offspring1_hashes_destination = set()
+        offspring2_hashes_destination = set()
+
         for idx in range(cut_point):
-            offspring1.append(copy.deepcopy(parent1[idx]))
-            offspring2.append(copy.deepcopy(parent2[idx]))
+            gene1 = parent1[idx]
+            gene2 = parent2[idx]
+
+            offspring1.append(gene1)
+            offspring2.append(gene2)
+
+            offspring1_hashes_source.add(gene1.hash_source())
+            offspring2_hashes_source.add(gene2.hash_source())
+
+            offspring1_hashes_destination.add(gene1.hash_destination())
+            offspring2_hashes_destination.add(gene2.hash_destination())
 
         # finishes the building of the offspring with the other parent
         for gene in parent2:
-            if chromosome.valid_append(offspring1, gene):
-                offspring1.append(copy.deepcopy(gene))
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, gene):
+                offspring1.append(gene)
         for gene in parent1:
-            if chromosome.valid_append(offspring2, gene):
-                offspring2.append(copy.deepcopy(gene))
+            if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, gene):
+                offspring2.append(gene)
 
         return (offspring1, offspring2)
 
@@ -110,25 +125,41 @@ class OrderCrossover(Crossover):
         # starts the offsprings with the sequence between the points in the parents
         offspring1 = []
         offspring2 = []
+
+        offspring1_hashes_source = set()
+        offspring2_hashes_source = set()
+
+        offspring1_hashes_destination = set()
+        offspring2_hashes_destination = set()
+
         for idx in range(p1, p2):
-            offspring1.append(copy.deepcopy(parent1[idx]))
-            offspring2.append(copy.deepcopy(parent2[idx]))
+            gene1 = parent1[idx]
+            gene2 = parent2[idx]
+
+            offspring1.append(gene1)
+            offspring2.append(gene2)
+
+            offspring1_hashes_source.add(gene1.hash_source())
+            offspring2_hashes_source.add(gene2.hash_source())
+
+            offspring1_hashes_destination.add(gene1.hash_destination())
+            offspring2_hashes_destination.add(gene2.hash_destination())
 
         # finishes the building of the offspring with the other parent
         # inserts the genes to the left of the second point
         for idx in range(p2 - 1, -1, -1):
             # the range goes from the second point to 0 in reverse order
-            if chromosome.valid_insert(offspring1, parent2[idx]):
-                offspring1.insert(0, copy.deepcopy(parent2[idx]))
-            if chromosome.valid_insert(offspring2, parent1[idx]):
-                offspring2.insert(0, copy.deepcopy(parent1[idx]))
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, parent2[idx]):
+                offspring1.insert(0, parent2[idx])
+            if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, parent1[idx]):
+                offspring2.insert(0, parent1[idx])
 
         # appends the genes to the right of the second point
         for idx in range(p2, len(parent2)):
-            if chromosome.valid_append(offspring1, parent2[idx]):
-                offspring1.append(copy.deepcopy(parent2[idx]))
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, parent2[idx]):
+                offspring1.append(parent2[idx])
         for idx in range(p2, len(parent1)):
-            if chromosome.valid_append(offspring2, parent1[idx]):
-                offspring2.append(copy.deepcopy(parent1[idx]))
+            if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, parent1[idx]):
+                offspring2.append(parent1[idx])
 
         return (offspring1, offspring2)

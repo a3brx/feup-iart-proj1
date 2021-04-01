@@ -3,7 +3,7 @@
 **/__pycache__
 
 ### Problem results ###
-data/*.out
+*.out
 
 ### VSCode ###
 # Launch file
