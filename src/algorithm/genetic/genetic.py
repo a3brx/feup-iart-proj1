@@ -76,11 +76,11 @@ class GeneticAlgorithm(Algorithm):
         print('Starting to make sex')
 
         while not self.stop():
+            self.iterations += 1
             if (self.generational):
                 # creates the required number of offsprings and replaces the old population
                 population = self.__new_generation(population)
                 new_best = self.best_solution(population)
-                self.iterations += 1
                 print(
                     f'Generation {self.iterations} max fitness {new_best.fitness} global fitness {best_solution.fitness}')
                 if new_best.fitness > best_solution.fitness:
@@ -111,6 +111,8 @@ class GeneticAlgorithm(Algorithm):
                 new_best = max(
                     [c1, c2], key=lambda chromosome: chromosome.fitness)
 
+                print(
+                    f'Iteration {self.iterations} max fitness {new_best.fitness} global fitness {best_solution.fitness}')
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
@@ -123,14 +125,16 @@ class GeneticAlgorithm(Algorithm):
     def mutate(self, chromosome):
         probability = random.uniform(0, 1)
 
-        if probability < self.mutation_probability:
+        if probability <= self.mutation_probability:
             mutation = random.randrange(0, len(self.mutations))
 
             mutation_function = self.mutations[mutation]
             mutated_chromosome = chromosome
 
             # 1 operation or 1 per 100 genes in a chromosome
-            op_count = max(1, len(chromosome) // 100)
+            max_op_count = max(1, len(chromosome) // 100)
+
+            op_count = random.randint(1, max_op_count)
 
             for _ in range(0, op_count):
                 mutated_chromosome = mutation_function(

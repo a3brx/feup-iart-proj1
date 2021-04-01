@@ -88,12 +88,13 @@ class Simulation:
             Order: The order that was completed, None if none was
         """
 
-        for order in orders:
-            if delivery.is_final() and delivery.destination.id == order.id:
-                for product in delivery.products:
-                    order.remove(product.type)
-                    order.visit(turns)
+        order = orders[delivery.destination.id]
 
-                return order
+        if delivery.is_final():
+            for product in delivery.products:
+                order.remove(product.type)
+                order.visit(turns)
+
+            return order
 
         return None

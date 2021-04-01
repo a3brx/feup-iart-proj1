@@ -10,9 +10,10 @@ if __name__ == "__main__":
 
     simulation = FileParsing.parse("data/busy_day.in")
 
-    selection = TournamentSelection(16)
+    selection = TournamentSelection(15)
+    crossover = OrderCrossover()
 
     algorithm = GeneticAlgorithm(
-        simulation, population_size=30, generational=True, selection_method=selection, iterations=100)
+        simulation, population_size=50, generational=False, crossover=crossover, mutation_probability=0.5, selection_method=selection, max_improveless_iterations=200)
     sol = algorithm.run().solution
     save_solution(sol, simulation)
