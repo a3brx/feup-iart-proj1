@@ -78,8 +78,6 @@ class Algorithm(ABC):
         # copies the orders to not complete the original ones
         delivered_orders = copy.deepcopy(self.simulation.orders)
 
-        print(solution)
-
         for drone in deliveries:
             # the starting location of the drone
             location = self.simulation.warehouses[0].location

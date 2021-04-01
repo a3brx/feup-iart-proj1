@@ -7,6 +7,7 @@ Classes:
 
 import copy
 import random
+import algorithm.operation.mutation as mutations
 
 from timeit import default_timer as timer
 from algorithm.genetic.selection import RoulleteSelection, TournamentSelection
@@ -26,7 +27,7 @@ class GeneticAlgorithm(Algorithm):
     """
 
     def __init__(self, simulation, time=None, iterations=None, max_improveless_iterations=20, selection_method=None,
-                 crossover=None, population_size=30, generational=True):
+                 crossover=None, population_size=30, generational=True, mutation_probability=0.2):
         """Instantiates a genetic algorithm.
 
         ...
@@ -55,6 +56,8 @@ class GeneticAlgorithm(Algorithm):
 
         self.population_size = population_size
         self.generational = generational
+        self.mutation_probability = mutation_probability
+        self.mutations = [mutations.exchange_positions, mutations.modify_drone]
 
     def run(self):
         """Runs the genetic algorithm.
@@ -114,7 +117,24 @@ class GeneticAlgorithm(Algorithm):
         return best_solution
 
     def mutate(self, chromosome):
-        # TODO
+        probability = random.uniform(0, 1)
+
+        if probability < self.mutation_probability:
+            mutation = random.randrange(0, len(self.mutations))
+
+            mutation_function = self.mutations[mutation]
+            mutated_chromosome = chromosome
+
+            # 1 operation or 1 per 100 genes in a chromosome
+            op_count = max(1, len(chromosome) // 100)
+
+            for _ in range(0, op_count):
+                print(mutation_function.__name__)
+                mutated_chromosome = mutation_function(
+                    chromosome, self.simulation)
+
+            return mutated_chromosome
+
         return chromosome
 
     def random_population(self):
