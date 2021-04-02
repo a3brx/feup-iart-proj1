@@ -5,8 +5,8 @@ from timeit import default_timer as timer
 import copy
 import itertools
 
-from simulation.model.transportation import Delivery
-from simulation.simulation import Simulation
+from delivery.simulation.model.transportation import Delivery
+from delivery.simulation.simulation import Simulation
 
 
 def single_score(turns_taken, total_turns):
@@ -58,20 +58,8 @@ class Algorithm(ABC):
 
     def evaluate(self, solution):
         # TODO
-        # splits the solution into solutions for single drones
-        drone_count = self.simulation.environment.drones_count
-        drone_jobs = [[] for _ in range(drone_count)]
+        deliveries = self.split_into_deliveries(solution)
 
-        for transportation in solution:
-            drone_jobs[transportation.drone].append(transportation)
-
-        # builds deliveries for the drones
-        # ie joining of transportation
-        deliveries = []
-        for job in drone_jobs:
-            deliveries.append(Delivery.build_deliveries(
-                job, self.simulation.environment.drone_max_payload))
-                
         score = 0
         # copies the orders to not complete the original ones
         delivered_orders = copy.deepcopy(self.simulation.orders)
@@ -104,6 +92,23 @@ class Algorithm(ABC):
             score = 1
 
         return score
+
+    def split_into_deliveries(self, solution):
+        # splits the solution into solutions for single drones
+        drone_count = self.simulation.environment.drones_count
+        drone_jobs = [[] for _ in range(drone_count)]
+
+        for transportation in solution:
+            drone_jobs[transportation.drone].append(transportation)
+
+        # builds deliveries for the drones
+        # ie joining of transportation
+        deliveries = []
+        for job in drone_jobs:
+            deliveries.append(Delivery.build_deliveries(
+                job, self.simulation.environment.drone_max_payload))
+
+        return deliveries
 
     def stop(self):
         """Verifies if the algorithm must stop.

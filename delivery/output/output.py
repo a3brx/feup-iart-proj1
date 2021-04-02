@@ -1,8 +1,9 @@
 import copy
 import itertools
-from output.command import Command
-from simulation.simulation import Simulation, euclidean_distance
-from simulation.model.transportation import Delivery
+from delivery.output.command import Command
+from delivery.simulation.simulation import Simulation, euclidean_distance
+from delivery.simulation.model.transportation import Delivery
+
 
 def save_solution(solution, simulation, filename="solution.out"):
     commands = solution_commands(solution, simulation)
@@ -13,6 +14,7 @@ def save_solution(solution, simulation, filename="solution.out"):
 
     for command in commands:
         file.write(str(command) + "\n")
+
 
 def solution_commands(solution, simulation):
     drone_count = simulation.environment.drones_count
@@ -63,48 +65,52 @@ def solution_commands(solution, simulation):
 
     return drone_commands
 
+
 def moves(delivery, drone_position):
-        """Calculates the number of turns it takes to deliver a delivery and its commands.
+    """Calculates the number of turns it takes to deliver a delivery and its commands.
 
-        ...
-        Parameters:
-            delivery (Delivery): The delivery to deliver
-            drone_position ((integer, integer)): The initial drone position
+    ...
+    Parameters:
+        delivery (Delivery): The delivery to deliver
+        drone_position ((integer, integer)): The initial drone position
 
-        Returns:
-            (integer, (integer, integer), List(Command)): The number of turns it takes, the final position of the drone, and the list of commands
-        """
-        commands = []
+    Returns:
+        (integer, (integer, integer), List(Command)): The number of turns it takes, the final position of the drone, and the list of commands
+    """
+    commands = []
 
-        products = {}
+    products = {}
 
-        for product in delivery.products:
-            if product.type not in products:
-                products[product.type] = 1
-            else:
-                products[product.type] += 1
-            
-        for product_type, product_count in products.items():
-            commands.append(Command(delivery.drone, command="L", warehouse_id=delivery.source.id, product_type=product_type, number_of_items=product_count))
+    for product in delivery.products:
+        if product.type not in products:
+            products[product.type] = 1
+        else:
+            products[product.type] += 1
 
-        turns = 0
+    for product_type, product_count in products.items():
+        commands.append(Command(delivery.drone, command="L", warehouse_id=delivery.source.id,
+                                product_type=product_type, number_of_items=product_count))
 
-        # distance to source
-        distance_to_source = euclidean_distance(drone_position, delivery.source.location)
-        turns += distance_to_source
+    turns = 0
 
-        # pickup the products
-        # TODO verify if the products are there, tenso
-        turns += delivery.product_types
+    # distance to source
+    distance_to_source = euclidean_distance(
+        drone_position, delivery.source.location)
+    turns += distance_to_source
 
-        # take the products to destination
-        turns += euclidean_distance(delivery.source.location,
-                                    delivery.destination.location)
+    # pickup the products
+    # TODO verify if the products are there, tenso
+    turns += delivery.product_types
 
-        # drops the prodcts
-        turns += delivery.product_types
+    # take the products to destination
+    turns += euclidean_distance(delivery.source.location,
+                                delivery.destination.location)
 
-        for product_type, product_count in products.items():
-            commands.append(Command(delivery.drone, command="D", customer_id=delivery.source.id, product_type=product_type, number_of_items=product_count))
+    # drops the prodcts
+    turns += delivery.product_types
 
-        return (turns, delivery.destination.location, commands)
+    for product_type, product_count in products.items():
+        commands.append(Command(delivery.drone, command="D", customer_id=delivery.source.id,
+                                product_type=product_type, number_of_items=product_count))
+
+    return (turns, delivery.destination.location, commands)

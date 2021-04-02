@@ -1,4 +1,4 @@
-from simulation.model.order import Order
+from delivery.simulation.model.order import Order
 
 
 class Transportation:

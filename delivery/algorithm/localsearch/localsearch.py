@@ -2,7 +2,7 @@ from random import choice
 
 from random import choice
 
-from algorithm.mutation import *
+from delivery.algorithm.mutation import *
 
 class LocalSearch:
     def __init__(self, model):

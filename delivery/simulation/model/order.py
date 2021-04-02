@@ -1,4 +1,4 @@
-from simulation.model.place import Place
+from delivery.simulation.model.place import Place
 
 
 class Order(Place):

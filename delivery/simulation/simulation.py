@@ -1,8 +1,8 @@
 import copy
 import math
 from random import randrange
-from simulation.model.warehouse import Warehouse
-from simulation.model.transportation import Transportation
+from delivery.simulation.model.warehouse import Warehouse
+from delivery.simulation.model.transportation import Transportation
 
 
 def euclidean_distance(location_lhs, location_rhs):

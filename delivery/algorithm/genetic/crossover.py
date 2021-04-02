@@ -8,7 +8,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-import algorithm.operation.restriction as restriction
+import delivery.algorithm.operation.restriction as restriction
 import copy
 import random
 
@@ -63,7 +63,8 @@ class OnePointCrossover(Crossover):
             (List[Path], List[Path]): The two generated offsprings
         """
         # generates the cut point
-        [smaller, larger] = sorted((parent1, parent2), key=lambda parent: len(parent))
+        [smaller, larger] = sorted(
+            (parent1, parent2), key=lambda parent: len(parent))
         min_size = len(smaller)
         cut_point = random.randint(1, min_size - 1)
 
@@ -123,7 +124,8 @@ class OrderCrossover(Crossover):
             (List[Path], List[Path]): The two generated offsprings
         """
         # generates the cut points
-        [smaller, larger] = sorted((parent1, parent2), key=lambda parent: len(parent))
+        [smaller, larger] = sorted(
+            (parent1, parent2), key=lambda parent: len(parent))
         min_size = len(smaller)
         points = random.sample(range(1, min_size - 1), 2)
         [p1, p2] = sorted(points)

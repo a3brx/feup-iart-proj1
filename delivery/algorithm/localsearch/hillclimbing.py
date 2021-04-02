@@ -1,4 +1,4 @@
-from algorithm.localsearch.localsearch import LocalSearch
+from delivery.algorithm.localsearch.localsearch import LocalSearch
 
 
 class HillClimbing(LocalSearch):
