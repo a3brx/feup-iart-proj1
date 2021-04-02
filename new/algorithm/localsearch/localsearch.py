@@ -14,7 +14,8 @@ class LocalSearch:
         result = self.solution.copy()
         functions = [
             ("Position", swap_operations),
-            ("Drone", switch_operation_drone)
+            ("Drone", switch_operation_drone),
+            ("Order", swap_order_items)
         ]
         while True:
             position = randrange(len(functions))

@@ -18,3 +18,23 @@ def switch_operation_drone(solution):
 
     solution.operations[operation_to_switch].drone = new_drone
     return True
+
+def swap_order_items(solution):
+    solution_length = len(solution.operations)
+
+    first_operation_index = randrange(solution_length)
+    first_operation = solution.operations[first_operation_index]
+
+    possible_operations = list(filter(
+        lambda x: x != first_operation_index and first_operation.item.product == solution.operations[x].item.product,
+        range(solution_length)
+    ))
+
+    if not possible_operations:
+        return False
+
+    second_operation_index = choice(possible_operations)
+    second_operation = solution.operations[second_operation_index]
+
+    first_operation.item, second_operation.item = second_operation.item, first_operation.item
+    return True
