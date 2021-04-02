@@ -1,12 +1,12 @@
-from abc import ABC, abstractmethod
+import copy
 import math
 import random
+import time
+from abc import ABC, abstractmethod
 from timeit import default_timer as timer
-import copy
-import itertools
 
 from delivery.simulation.model.transportation import Delivery
-from delivery.simulation.simulation import Simulation
+from delivery.simulation.simulation import Simulation, euclidean_distance
 
 
 def single_score(turns_taken, total_turns):
@@ -37,7 +37,7 @@ class Algorithm(ABC):
         simulation = copy.deepcopy(self.simulation)
 
         simulation.orders.sort(
-            key=lambda order: self.simulation.order_weight(order.id))
+            key=lambda order: len(order.product_types))
 
         solution = []
 
@@ -53,10 +53,9 @@ class Algorithm(ABC):
 
                 solution.append(transportation)
 
-        random.shuffle(solution)
         return solution
 
-    def evaluate(self, solution):
+    def delivery_based_evaluate(self, solution):
         # TODO
         deliveries = self.split_into_deliveries(solution)
 
@@ -93,6 +92,72 @@ class Algorithm(ABC):
 
         return score
 
+    def turn_based_evaluate(self, solution):
+        commands = self.split_into_commands(solution)
+
+        return self.command_evaluation(commands, self.simulation)
+
+    def evaluate(self, solution):
+        return self.delivery_based_evaluate(solution)
+
+    def command_evaluation(self, drone_commands, simulation):
+        score = 0
+
+        orders = copy.deepcopy(simulation.orders)
+
+        for commands in drone_commands:
+            score += self.__drone_command_evaluation(
+                commands, simulation, orders)
+
+        return score
+
+    def __drone_command_evaluation(self, commands, simulation, orders):
+        max_turns = simulation.environment.turns
+        warehouses = simulation.warehouses
+
+        drone_location = warehouses[0].location
+
+        turns = 0
+        score = 0
+
+        for command in commands:
+            if command.command == 'L':
+                warehouse_id = command.warehouse_id
+
+                destination = warehouses[warehouse_id].location
+
+                turns += 1 + euclidean_distance(drone_location, destination)
+
+                if turns >= max_turns:
+                    break
+
+                drone_location = destination
+            elif command.command == 'D':
+                customer_id = command.customer_id
+                product_type = command.product_type
+                number_of_items = command.number_of_items
+
+                order = orders[customer_id]
+
+                destination = order.location
+
+                turns += 1 + euclidean_distance(drone_location, destination)
+
+                if turns >= max_turns:
+                    break
+
+                order.visit(turns)
+
+                for _ in range(0, number_of_items):
+                    order.remove(product_type)
+
+                if order.is_complete():
+                    score += single_score(order.turns - 1, max_turns)
+
+                drone_location = destination
+
+        return score
+
     def split_into_deliveries(self, solution):
         # splits the solution into solutions for single drones
         drone_count = self.simulation.environment.drones_count
@@ -109,6 +174,22 @@ class Algorithm(ABC):
                 job, self.simulation.environment.drone_max_payload))
 
         return deliveries
+
+    def split_into_commands(self, solution):
+        # splits the solution into solutions for single drones
+        drone_count = self.simulation.environment.drones_count
+        drone_jobs = [[] for _ in range(drone_count)]
+
+        for transportation in solution:
+            drone_jobs[transportation.drone].append(transportation)
+
+        # builds commands for the drones
+        commands = []
+        for job in drone_jobs:
+            commands.append(Delivery.build_commands(
+                job, self.simulation.environment.drone_max_payload))
+
+        return commands
 
     def stop(self):
         """Verifies if the algorithm must stop.

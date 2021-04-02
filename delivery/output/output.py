@@ -110,7 +110,7 @@ def moves(delivery, drone_position):
     turns += delivery.product_types
 
     for product_type, product_count in products.items():
-        commands.append(Command(delivery.drone, command="D", customer_id=delivery.source.id,
+        commands.append(Command(delivery.drone, command="D", customer_id=delivery.destination.id,
                                 product_type=product_type, number_of_items=product_count))
 
     return (turns, delivery.destination.location, commands)

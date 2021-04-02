@@ -12,8 +12,8 @@ from timeit import default_timer as timer
 import delivery.algorithm.operation.mutation as mutations
 from delivery.algorithm.algorithm import Algorithm
 from delivery.algorithm.genetic.chromosome import Chromosome
-from delivery.algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
-from delivery.algorithm.genetic.selection import RoulleteSelection, TournamentSelection
+from delivery.algorithm.genetic.crossover import OnePointCrossover
+from delivery.algorithm.genetic.selection import RoulleteSelection
 
 
 class GeneticAlgorithm(Algorithm):
@@ -27,7 +27,7 @@ class GeneticAlgorithm(Algorithm):
     """
 
     def __init__(self, simulation, time=None, iterations=None, max_improveless_iterations=20, selection_method=None,
-                 crossover=None, population_size=30, generational=True, mutation_probability=0.2, log=True):
+                 crossover=None, population_size=30, generational=True, mutation_probability=0.2, log=True, save_results=False):
         """Instantiates a genetic algorithm.
 
         ...
@@ -59,6 +59,18 @@ class GeneticAlgorithm(Algorithm):
         self.mutation_probability = mutation_probability
         self.mutations = [mutations.exchange_positions, mutations.modify_drone]
         self.log = log
+        self.save_results = save_results
+
+        if self.save_results:
+            self.results_file = open(
+                f'results_{str(timer())}.log', 'a')
+
+            if self.generational:
+                self.results_file.write(
+                    'Generation;Generation max fitness;Global max fitness\n')
+            else:
+                self.results_file.write(
+                    'Iteration;Fitness\n')
 
     def run(self):
         """Runs the genetic algorithm.
@@ -76,7 +88,7 @@ class GeneticAlgorithm(Algorithm):
         best_solution = self.best_solution(population)
 
         if self.log:
-            print('Starting to make sex')
+            print('Starting reproduction')
 
         self.starting_time = timer()
         self.iterations = 0
@@ -88,9 +100,15 @@ class GeneticAlgorithm(Algorithm):
                 # creates the required number of offsprings and replaces the old population
                 population = self.__new_generation(population)
                 new_best = self.best_solution(population)
+
+                if self.iterations % 10 == 0 and self.save_results:
+                    self.results_file.write(
+                        f'{self.iterations};{new_best.fitness};{best_solution.fitness}\n')
+
                 if self.log:
                     print(
-                        f'Generation {self.iterations} max fitness {new_best.fitness} global fitness {best_solution.fitness}')
+                        f'Generation {self.iterations} with max fitness {new_best.fitness} and global fitness {best_solution.fitness}')
+
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
@@ -121,12 +139,17 @@ class GeneticAlgorithm(Algorithm):
 
                 if self.log:
                     print(
-                        f'Iteration {self.iterations} max fitness {new_best.fitness} global fitness {best_solution.fitness}')
+                        f'Iteration {self.iterations} with max fitness {new_best.fitness} and global fitness {best_solution.fitness}')
+
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
                 else:
                     self.improveless_iterations += 1
+
+                if self.iterations % 1000 == 0 and self.save_results:
+                    self.results_file.write(
+                        f'{self.iterations};{best_solution.fitness}\n')
 
         # gets the best solution of the current population and returns it
         return best_solution

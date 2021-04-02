@@ -17,7 +17,7 @@ def parse(path):
     warehouses = __parse_warehouses(contents, product_weights)
     orders = __parse_orders(contents)
 
-    return Simulation(environment, product_weights, warehouses, orders)
+    return Simulation(environment, product_weights, warehouses, orders, product_weights)
 
 
 def __parse_environment(contents):

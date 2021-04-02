@@ -14,11 +14,12 @@ def euclidean_distance(location_lhs, location_rhs):
 
 class Simulation:
 
-    def __init__(self, environment, products, warehouses, orders):
+    def __init__(self, environment, products, warehouses, orders, product_weights):
         self.environment = environment
         self.products = products
         self.warehouses = warehouses
         self.orders = orders
+        self.product_weights = product_weights
 
     def order_weight(self, order_id):
         return sum([
@@ -28,8 +29,12 @@ class Simulation:
         warehouses = sorted(self.warehouses, key=lambda warehouse: euclidean_distance(
             location, warehouse.location))
 
-        warehouse = next((warehouse for warehouse in warehouses if warehouse.product(
-            product_type) is not None), None)
+        # warehouse = next((warehouse for warehouse in warehouses if warehouse.product(
+        #    product_type) is not None), None)
+
+        for warehouse in warehouses:
+            if warehouse.product(product_type) is not None:
+                return (warehouse, warehouse.product(product_type))
 
         if warehouse is not None:
             return (warehouse, warehouse.product(product_type))

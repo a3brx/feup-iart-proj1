@@ -4,6 +4,7 @@
 
 ### Problem results ###
 *.out
+results_*.log
 
 ### VSCode ###
 # Launch file

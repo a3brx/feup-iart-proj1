@@ -1,4 +1,5 @@
 from delivery.simulation.model.order import Order
+from delivery.output.command import Command
 
 
 class Transportation:
@@ -34,6 +35,7 @@ class Transportation:
 
     def __repr__(self):
         return self.__str__()
+
 
 class Delivery:
     """Treats the delivery of a set of products to a destination.
@@ -84,6 +86,28 @@ class Delivery:
 
         return res
 
+    @classmethod
+    def build_commands(cls, drone_transportation, payload):
+        commands = []  # the returning list
+        last_delivery = None  # the delivery that is being built in real time
+
+        for transportation in drone_transportation:
+            if last_delivery is None or last_delivery.source != transportation.source or last_delivery.destination != transportation.destination or last_delivery.weight + transportation.product.weight > payload:
+                # if not the same as last delivery, just builds a new delivery and puts it in the res
+                if last_delivery is not None:
+                    commands.extend(last_delivery.to_commands())
+
+                last_delivery = cls([transportation.product],
+                                    transportation.drone, transportation.source, transportation.destination)
+            else:
+                # if the transportation is for the same delivery and the payload allows it, just adds the new product
+                last_delivery.add(transportation.product)
+
+        if last_delivery is not None:
+            commands.extend(last_delivery.to_commands())
+
+        return commands
+
     @property
     def weight(self):
         return self.__weight
@@ -105,6 +129,26 @@ class Delivery:
     def is_final(self):
         return isinstance(self.destination, Order)
 
+    def to_commands(self):
+        product_count = {}
+
+        for product in self.products:
+            if product.type in product_count:
+                product_count[product.type] += 1
+            else:
+                product_count[product.type] = 1
+
+        load_commands = []
+        deliver_commands = []
+
+        for type, count in product_count.items():
+            load_commands.append(
+                Command(self.drone, 'L', self.source.id, type, count))
+            deliver_commands.append(
+                Command(self.drone, 'D', customer_id=self.destination.id, product_type=type, number_of_items=count))
+
+        return load_commands + deliver_commands
+
     def __update_weight(self):
         self.__weight = 0
         for product in self.products:
@@ -121,8 +165,8 @@ class Delivery:
 
     def __str__(self):
         identifier = 'o' if isinstance(self.destination, Order) else 'w'
-        product_ids = [product.id for product in self.products]
-        return f'p{product_ids} d{self.drone} w{self.source.id} {identifier}{self.destination.id}'
+        product_types = [product.type for product in self.products]
+        return f'p{product_types} d{self.drone} w{self.source.id} {identifier}{self.destination.id}'
 
     def __repr__(self):
         return self.__str__()

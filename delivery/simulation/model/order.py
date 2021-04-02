@@ -5,12 +5,13 @@ class Order(Place):
 
     id = 0
 
-    def __init__(self, location, product_types):
+    def __init__(self, location, product_types, id=None):
         super().__init__(location)
-        self.id = Order.id
         self.turns = None
 
-        Order.id += 1
+        if id == None:
+            self.id = Order.id
+            Order.id += 1
 
         self.product_types = product_types
 
