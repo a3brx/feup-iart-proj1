@@ -24,9 +24,6 @@ class Place:
     def __str__(self):
         return str(self.id) + " at " + str(self.position)
 
-    def copy(self):
-        return self
-
     def distance_to(self, operand):
         return self.position.distance_to(operand.position)
 
@@ -42,9 +39,6 @@ class Client(Place):
 
     def __len__(self):
         return len(self.order)
-    
-    def copy(self):
-        return Client(self.id, self.position.x, self.position.y, self.initial_order)
 
 
 class Warehouse(Place):
@@ -53,6 +47,3 @@ class Warehouse(Place):
 
     def __str__(self):
         return "wr" + super().__str__()
-
-    def copy(self):
-        return self

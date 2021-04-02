@@ -13,8 +13,5 @@ class Item:
         self.product = product
         self.origin = origin
 
-    def copy(self):
-        return self
-
     def __str__(self):
         return "i" + str(self.id) + " of " + str(self.product)

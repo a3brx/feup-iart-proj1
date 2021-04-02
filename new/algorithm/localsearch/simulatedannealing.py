@@ -13,4 +13,4 @@ class SimulatedAnnealing(LocalSearch):
         self.temperature *= 0.99
 
     def accept_condition(self, delta):
-        return delta > 0 or (delta < 0 and pow(e, delta / self.temperature) > uniform(0, 1))
+        return delta > 0 or pow(e, delta / self.temperature) > uniform(0, 1)

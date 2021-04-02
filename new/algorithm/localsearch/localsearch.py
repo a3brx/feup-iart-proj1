@@ -1,21 +1,20 @@
 from algorithm.mutation import *
-from simulation.solution import Solution
+from solution.solution import Solution
 
 
 class LocalSearch:
     def __init__(self, data):
         self.data = data
         self.solution = Solution.initial(self.data)
+        self.solution.get_score()
         self.iterations = 0
         self.max_iterations = 100
 
     def get_random_neighbour(self):
         result = self.solution.copy()
         functions = [
-            ("Swap", swap_operations),
-            ("Insert", insert_operation),
-            ("Remove", remove_operation),
-            ("Switch", switch_operation_drone)
+            ("Position", swap_operations),
+            ("Drone", switch_operation_drone)
         ]
         while True:
             position = randrange(len(functions))
@@ -30,8 +29,15 @@ class LocalSearch:
     def accept_condition(self, delta):
         return delta > 0
 
+    def print_solution(self, text="new"):
+        print(text + " score:", self.solution.get_score())
+        #for operation in self.solution.operations:
+        #    print(operation)
+        print("-" * 60)
+
     def run(self):
-        print("Initial score:", self.solution.get_score())
+        self.print_solution("initial")
+
         while self.iterations < self.max_iterations:
             self.recalculate_attributes()
 
@@ -40,10 +46,7 @@ class LocalSearch:
 
             if self.accept_condition(delta):
                 self.solution = neighbour
-                print("-" * 30)
-                print("New score:", self.solution.get_score())
-                for operation in self.solution.operations:
-                    print(operation)
+                self.print_solution()
                 self.iterations = 0
 
             self.iterations += 1
