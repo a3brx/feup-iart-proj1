@@ -1,5 +1,6 @@
 from math import ceil
 from random import choice, randrange, shuffle
+from time import perf_counter
 
 from model.drone import Drone
 from model.place import Client
@@ -11,7 +12,7 @@ class DroneSimulation(Drone):
         super().__init__(drone.id)
         self.position = position
         self.tasks = []
-    
+
     def distance_to(self, operand):
         return self.position.distance_to(operand.position)
 
@@ -40,6 +41,49 @@ class Solution:
             self.score = self.evaluate()
         return self.score
 
+    def evaluate(self):
+        # Init drones
+        drone_initial_position = self.environment.warehouses[0].position
+        simulated_drones = [
+            DroneSimulation(drone, drone_initial_position)
+            for drone in self.environment.drones
+        ]
+        for operation in self.operations:
+            simulated_drones[operation.drone.id].tasks.append(operation)
+
+        # Init clients
+        simulated_clients = list(
+            map(ClientSimulation, self.environment.clients))
+
+        score = 0
+        for drone in simulated_drones:
+            turn = -1
+            for task in drone.tasks:
+                distance_to_warehouse = drone.distance_to(task.item.origin)
+                distance_to_client = task.item.origin.distance_to(
+                    task.destination)
+                turn += distance_to_warehouse + distance_to_client + 2
+                if turn >= self.environment.number_of_turns:
+                    break
+                drone.position = task.destination.position
+                client = simulated_clients[task.destination.id]
+                client.simulated_order.remove(task.item.product)
+                if not simulated_clients[client.id].simulated_order:
+                    score += ceil((self.environment.number_of_turns -
+                                  turn) / self.environment.number_of_turns * 100)
+        return score
+
+    def to_output_file(self, output_file_name):
+        operations = sorted(
+            self.operations,
+            key=lambda x: x.drone.id
+        )
+        size = len(operations) * 2
+        with open("data/" + output_file_name + ".out", "w+") as output_file:
+            output_file.write(str(size) + "\n")
+            for operation in operations:
+                output_file.write(operation.to_output())
+
     @classmethod
     def initial(cls, environment):
         # Create lists of items by product
@@ -63,34 +107,6 @@ class Solution:
         # Create list of operations
         operations = []
         for item in items_clients:
-            operations.append(
-                Operation(item, items_clients[item], choice(environment.drones)))
+            operations.append(Operation(item, items_clients[item], choice(environment.drones)))
 
         return Solution(environment, items_clients, operations)
-
-    def evaluate(self):
-        # Init drones
-        drone_initial_position = self.environment.warehouses[0].position
-        simulated_drones = [
-            DroneSimulation(drone, drone_initial_position)
-            for drone in self.environment.drones
-        ]
-        simulated_clients = list(map(ClientSimulation, self.environment.clients))
-        for operation in self.operations:
-            simulated_drones[operation.drone.id].tasks.append(operation)
-
-        score = 0
-        for drone in simulated_drones:
-            turn = 0
-            for task in drone.tasks:
-                distance_to_warehouse = drone.distance_to(task.item.origin)
-                distance_to_client = task.item.origin.distance_to(task.destination)
-                turn += distance_to_warehouse + distance_to_client + 2
-                if turn >= self.environment.number_of_turns:
-                    break
-                drone.position = task.destination.position
-                client = simulated_clients[task.destination.id]
-                client.simulated_order.remove(task.item.product)
-                if not simulated_clients[client.id].simulated_order:
-                    score += ceil((self.environment.number_of_turns - turn) / self.environment.number_of_turns * 100)
-        return score

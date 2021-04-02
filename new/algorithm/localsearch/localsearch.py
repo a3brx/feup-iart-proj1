@@ -39,7 +39,7 @@ class LocalSearch:
     def run(self):
         self.print_solution("initial")
 
-        while self.iterations < self.max_iterations:
+        for _ in range(10 * self.max_iterations):
             self.recalculate_attributes()
 
             neighbour = self.get_random_neighbour()
@@ -51,3 +51,7 @@ class LocalSearch:
                 self.iterations = 0
 
             self.iterations += 1
+            if self.iterations > self.max_iterations:
+                break
+
+        return self.solution

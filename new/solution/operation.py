@@ -20,3 +20,14 @@ class Operation:
         item = normalize(self.item, 15)
         destination = normalize(self.destination, 17)
         return drone + " moves " + item + " to " + destination
+    
+    def to_output(self):
+        drone = str(self.drone.id)
+        product = str(self.item.product.id)
+        warehouse = str(self.item.origin.id)
+        client = str(self.destination.id)
+
+        load = drone + " L " + warehouse + " " + product + " 1\n"
+        deliver = drone + " D " + client + " " + product + " 1\n"
+
+        return load + deliver
