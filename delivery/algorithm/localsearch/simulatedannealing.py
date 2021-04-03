@@ -6,7 +6,7 @@ from delivery.algorithm.localsearch.localsearch import LocalSearch
 
 class SimulatedAnnealing(LocalSearch):
     def __init__(self, data, max_iterations=5000, iteration_search=50, save_results=False, temperature_schedule=0.9, initial_temperature=1000):
-        super().__init__(data, max_iterations, save_results, iteration_search)
+        super().__init__(data, max_iterations, iteration_search, save_results)
         self.temperature = initial_temperature
         self.temperature_schedule = temperature_schedule
 

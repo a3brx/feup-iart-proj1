@@ -6,7 +6,7 @@ from delivery.solution.solution import Solution
 
 class LocalSearch:
 
-    ITERATIONS_PER_RESULT = 100
+    ITERATIONS_PER_RESULT = 10
 
     def __init__(self, data, max_iterations=5000, iteration_search=50, save_results=False):
         self.data = data
