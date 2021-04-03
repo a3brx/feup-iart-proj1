@@ -157,6 +157,14 @@ class Runner:
         if max_iterations is not None:
             args['max_iterations'] = int(max_iterations)
 
+        iteration_search = (json.get('iteration_search', required=False))
+        if iteration_search is not None:
+            args['iteration_search'] = int(iteration_search)
+
+        save_results = (json.get('save_results', required=False))
+        if save_results is not None:
+            args['save_results'] = str2bool(save_results)
+
         return args
 
     def __simulated_annealing(json):
@@ -166,12 +174,20 @@ class Runner:
         if max_iterations is not None:
             args['max_iterations'] = int(max_iterations)
 
-        max_iterations = (json.get('temperature_schedule', required=False))
-        if max_iterations is not None:
-            args['temperature_schedule'] = int(max_iterations)
+        iteration_search = (json.get('iteration_search', required=False))
+        if iteration_search is not None:
+            args['iteration_search'] = int(iteration_search)
 
-        max_iterations = (json.get('initial_temperature', required=False))
-        if max_iterations is not None:
-            args['initial_temperature'] = int(max_iterations)
+        temperature_schedule = (json.get('temperature_schedule', required=False))
+        if temperature_schedule is not None:
+            args['temperature_schedule'] = float(temperature_schedule)
+
+        initial_temperature = (json.get('initial_temperature', required=False))
+        if initial_temperature is not None:
+            args['initial_temperature'] = int(initial_temperature)
+
+        save_results = (json.get('save_results', required=False))
+        if save_results is not None:
+            args['save_results'] = str2bool(save_results)
 
         return args

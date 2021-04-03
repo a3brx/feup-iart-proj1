@@ -1,0 +1,12 @@
+{
+    "input_file": "data/custom.in",
+    "output_file": "test3.out",
+    "algorithm": {
+        "name": "simulated_annealing",
+        "max_iterations": "30000",
+        "iteration_search": "50",
+        "temperature_schedule": "0.95",
+        "initial_temperature": "1000000",
+        "save_results": "True"
+    }
+}

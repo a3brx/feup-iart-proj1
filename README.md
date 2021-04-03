@@ -67,6 +67,7 @@ Tu run the program with a desired configuration, it receives a JSON input file (
 
 - **algorithm**: required
     - **max_iterations**: the max possible number of iterations
+    - **iteration_search**: the number of neighbours generated per iteration
 
 ##### Simulated Annealing
 
@@ -85,6 +86,7 @@ Tu run the program with a desired configuration, it receives a JSON input file (
 
 - **algorithm**: required
     - **max_iterations**: the max possible number of iterations
+    - **iteration_search**: the number of neighbours generated per iteration
     - **temperature_schedule**: the time schedule, the factor that will define the rate of decreasing in temperature
     - **initial_temperature**: the initial temperature
 
