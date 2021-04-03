@@ -9,3 +9,5 @@ results_*.log
 ### VSCode ###
 # Launch file
 .vscode/launch.json
+
+.ipynb_*/
