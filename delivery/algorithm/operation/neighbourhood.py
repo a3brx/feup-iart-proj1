@@ -1,6 +1,6 @@
 from random import choice, randrange
 
-from solution.operation import Operation
+from delivery.solution.operation import Operation
 
 def swap_operations(solution):
     solution_length = len(solution.operations)

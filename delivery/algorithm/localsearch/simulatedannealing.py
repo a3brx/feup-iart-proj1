@@ -1,7 +1,7 @@
 from math import e
 from random import uniform
 
-from algorithm.localsearch.localsearch import LocalSearch
+from delivery.algorithm.localsearch.localsearch import LocalSearch
 
 
 class SimulatedAnnealing(LocalSearch):

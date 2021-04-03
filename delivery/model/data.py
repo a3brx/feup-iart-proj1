@@ -1,6 +1,6 @@
-from model.place import Client, Warehouse
-from model.item import Item, Product
-from model.drone import Drone
+from delivery.model.place import Client, Warehouse
+from delivery.model.item import Item, Product
+from delivery.model.drone import Drone
 
 
 class Data:
@@ -32,7 +32,7 @@ class Data:
 
     @classmethod
     def from_input_file(cls, file):
-        with open("data/" + file + ".in") as input_file:
+        with open(file) as input_file:
             def read_int():
                 return int(input_file.readline())
 

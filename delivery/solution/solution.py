@@ -2,9 +2,9 @@ from math import ceil
 from random import choice, randrange, shuffle
 from time import perf_counter
 
-from model.drone import Drone
-from model.place import Client
-from solution.operation import Operation
+from delivery.model.drone import Drone
+from delivery.model.place import Client
+from delivery.solution.operation import Operation
 
 
 class DroneSimulation(Drone):
@@ -93,7 +93,7 @@ class Solution:
             key=lambda x: x.drone.id
         )
         size = len(operations) * 2
-        with open("data/" + output_file_name + ".out", "w+") as output_file:
+        with open(output_file_name, "w+") as output_file:
             output_file.write(str(size) + "\n")
             for operation in operations:
                 output_file.write(operation.to_output())

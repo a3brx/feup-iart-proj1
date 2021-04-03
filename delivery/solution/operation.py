@@ -1,4 +1,4 @@
-from model.place import Client
+from delivery.model.place import Client
 
 class Operation:
     def __init__(self, item, destination, drone):
