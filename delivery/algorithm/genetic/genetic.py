@@ -13,8 +13,8 @@ from timeit import default_timer as timer
 import delivery.algorithm.operation.mutation as mutations
 from delivery.algorithm.algorithm import Algorithm
 from delivery.algorithm.genetic.chromosome import Chromosome
-from delivery.algorithm.genetic.crossover import OnePointCrossover
-from delivery.algorithm.genetic.selection import RoulleteSelection
+from delivery.algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
+from delivery.algorithm.genetic.selection import RoulleteSelection, TournamentSelection
 
 
 class GeneticAlgorithm(Algorithm):
@@ -52,8 +52,9 @@ class GeneticAlgorithm(Algorithm):
         super().__init__(simulation, time, iterations, max_improveless_iterations)
 
         self.selection_method = \
-            RoulleteSelection() if selection_method is None else selection_method
-        self.crossover = OnePointCrossover() if crossover is None else crossover
+            TournamentSelection(
+                population_size // 3) if selection_method is None else selection_method
+        self.crossover = OrderCrossover() if crossover is None else crossover
 
         self.population_size = population_size
         self.generational = generational

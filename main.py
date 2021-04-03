@@ -1,5 +1,5 @@
-import delivery.genetic as genetic_main
-import delivery.localsearch as localsearch_main
+import cli.main
 
-genetic_main.run()
-# localsearch_main.run()
+if __name__ == "__main__":
+    cli.main.run()
+
