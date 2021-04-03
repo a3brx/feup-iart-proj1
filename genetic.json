@@ -1,7 +1,18 @@
 {
     "input_file": "data/fouroo.in",
-    "output_file": "test2.out",
+    "output_file": "ze.out",
     "algorithm": {
-        "name": "hill_climbing"
+        "name": "genetic",
+        "max_time": "20",
+        "iterations": "20",
+        "max_improveless_iterations": "30",
+        "selection_method": "tournament",
+        "tournament_size": "10",
+        "crossover": "order",
+        "population_size" : "30",
+        "generational": "True",
+        "mutation_probability": "0.2",
+        "log": "True",
+        "save_results": "False"
     }
 }
