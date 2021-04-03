@@ -3,7 +3,7 @@ from delivery.solution.solution import Solution
 
 
 class LocalSearch:
-    def __init__(self, data, max_iterations):
+    def __init__(self, data, max_iterations=5000):
         self.data = data
         self.solution = Solution.initial(self.data)
         self.solution.get_score()
