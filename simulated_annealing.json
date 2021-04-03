@@ -5,7 +5,7 @@
         "name": "simulated_annealing",
         "max_iterations": "1000",
         "iteration_search": "20",
-        "temperature_schedule": "0.99",
+        "temperature_schedule": "0.95",
         "initial_temperature": "1000000",
         "save_results": "True"
     }
