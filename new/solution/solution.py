@@ -21,6 +21,20 @@ class ClientSimulation(Client):
     def __init__(self, client):
         super().__init__(client.id, client.position.x, client.position.y, client.order)
         self.simulated_order = client.order.copy()
+        self.last_order = None
+
+    def receive_product(self, turn, product):
+        self.simulated_order.remove(product)
+        if self.last_order == None or turn > self.last_order:
+            self.last_order = turn
+
+    def get_last_order(self):
+        return self.last_order
+
+    def get_score(self, number_of_turns):
+        if self.simulated_order:
+            return 0
+        return ceil((number_of_turns - self.last_order) / number_of_turns * 100)
 
 
 class Solution:
@@ -55,7 +69,6 @@ class Solution:
         simulated_clients = list(
             map(ClientSimulation, self.environment.clients))
 
-        score = 0
         for drone in simulated_drones:
             turn = -1
             for task in drone.tasks:
@@ -67,10 +80,11 @@ class Solution:
                     break
                 drone.position = task.destination.position
                 client = simulated_clients[task.destination.id]
-                client.simulated_order.remove(task.item.product)
-                if not simulated_clients[client.id].simulated_order:
-                    score += ceil((self.environment.number_of_turns -
-                                  turn) / self.environment.number_of_turns * 100)
+                client.receive_product(turn, task.item.product)
+
+        score = 0
+        for client in simulated_clients:
+            score += client.get_score(self.environment.number_of_turns)
         return score
 
     def to_output_file(self, output_file_name):
@@ -107,6 +121,7 @@ class Solution:
         # Create list of operations
         operations = []
         for item in items_clients:
-            operations.append(Operation(item, items_clients[item], choice(environment.drones)))
+            operations.append(
+                Operation(item, items_clients[item], choice(environment.drones)))
 
         return Solution(environment, items_clients, operations)
