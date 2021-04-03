@@ -51,10 +51,14 @@ class RoulleteSelection(SelectionMethod):
             (Chromosome, Chromosome): The selected parent chromosomes
         """
 
+        fitness = [chromosome.fitness for chromosome in population]
+        min_fitness = min(fitness)
+        fitness = [fit - min_fitness + 1 for fit in fitness]
+
         # random.sample is used since the chromosome fitness is required to be an integer
         result_list = random.sample(
             population=population,
-            counts=[chromosome.fitness for chromosome in population],
+            counts=fitness,
             k=2
         )
         return tuple(result_list)
@@ -113,7 +117,7 @@ class TournamentSelection(SelectionMethod):
             (Chromosome, Chromosome): The selected parent chromosomes
         """
         max_competitor_amount = len(population) // 2
-        competitor_amount = max_competitor_amount if self.competitor_amount > max_competitor_amount else self.competitor_amount
+        competitor_amount = min(max_competitor_amount, self.competitor_amount)
 
         # picks the chromosomes for the tournaments
         # random.sample is used since the chromosome fitness is required to be an integer

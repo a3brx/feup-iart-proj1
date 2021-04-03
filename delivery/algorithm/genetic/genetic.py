@@ -7,13 +7,14 @@ Classes:
 
 import copy
 import random
-import algorithm.operation.mutation as mutations
-
+import statistics
 from timeit import default_timer as timer
-from algorithm.genetic.selection import RoulleteSelection, TournamentSelection
-from algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
-from algorithm.genetic.chromosome import Chromosome
-from algorithm.algorithm import Algorithm
+
+import delivery.algorithm.operation.mutation as mutations
+from delivery.algorithm.algorithm import Algorithm
+from delivery.algorithm.genetic.chromosome import Chromosome
+from delivery.algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
+from delivery.algorithm.genetic.selection import RoulleteSelection, TournamentSelection
 
 
 class GeneticAlgorithm(Algorithm):
@@ -27,7 +28,7 @@ class GeneticAlgorithm(Algorithm):
     """
 
     def __init__(self, simulation, time=None, iterations=None, max_improveless_iterations=20, selection_method=None,
-                 crossover=None, population_size=30, generational=True, mutation_probability=0.2):
+                 crossover=None, population_size=30, generational=True, mutation_probability=0.2, log=True, save_results=False):
         """Instantiates a genetic algorithm.
 
         ...
@@ -51,13 +52,27 @@ class GeneticAlgorithm(Algorithm):
         super().__init__(simulation, time, iterations, max_improveless_iterations)
 
         self.selection_method = \
-            RoulleteSelection() if selection_method is None else selection_method
-        self.crossover = OnePointCrossover() if crossover is None else crossover
+            TournamentSelection(
+                population_size // 3) if selection_method is None else selection_method
+        self.crossover = OrderCrossover() if crossover is None else crossover
 
         self.population_size = population_size
         self.generational = generational
         self.mutation_probability = mutation_probability
         self.mutations = [mutations.exchange_positions, mutations.modify_drone]
+        self.log = log
+        self.save_results = save_results
+
+        if self.save_results:
+            self.results_file = open(
+                f'results_{str(timer())}.log', 'a')
+
+            if self.generational:
+                self.results_file.write(
+                    'Generation;Generation max fitness;Generation min fitness;Generation average fitness;Global max fitness\n')
+            else:
+                self.results_file.write(
+                    'Iteration;Fitness\n')
 
     def run(self):
         """Runs the genetic algorithm.
@@ -69,11 +84,17 @@ class GeneticAlgorithm(Algorithm):
         self.starting_time = timer()
 
         # builds the initial solution
-        print('Building initial solution')
+        if self.log:
+            print('Building initial solution')
         population = self.random_population()
         best_solution = self.best_solution(population)
 
-        print('Starting to make sex')
+        if self.log:
+            print('Starting reproduction')
+
+        self.starting_time = timer()
+        self.iterations = 0
+        self.improveless_iterations = 0
 
         while not self.stop():
             self.iterations += 1
@@ -81,8 +102,18 @@ class GeneticAlgorithm(Algorithm):
                 # creates the required number of offsprings and replaces the old population
                 population = self.__new_generation(population)
                 new_best = self.best_solution(population)
-                print(
-                    f'Generation {self.iterations} max fitness {new_best.fitness} global fitness {best_solution.fitness}')
+
+                if self.iterations % 10 == 0 and self.save_results:
+                    average_fitness, min_fitness = self.__population_statistics(
+                        population)
+
+                    self.results_file.write(
+                        f'{self.iterations};{new_best.fitness};{min_fitness};{average_fitness};{best_solution.fitness}\n')
+
+                if self.log:
+                    print(
+                        f'Generation {self.iterations} with max fitness {new_best.fitness} and global fitness {best_solution.fitness}')
+
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
@@ -91,8 +122,8 @@ class GeneticAlgorithm(Algorithm):
 
             else:
                 # creates one offspring, adds it to the population, and removes the worst offspring in there
-                (parent1, parent2) = self.selection_method.run(population)
-                (offspring1, offspring2) = self.crossover.run(
+                parent1, parent2 = self.selection_method.run(population)
+                offspring1, offspring2 = self.crossover.run(
                     parent1.solution, parent2.solution)
 
                 offspring1 = self.mutate(offspring1)
@@ -111,13 +142,19 @@ class GeneticAlgorithm(Algorithm):
                 new_best = max(
                     [c1, c2], key=lambda chromosome: chromosome.fitness)
 
-                print(
-                    f'Iteration {self.iterations} max fitness {new_best.fitness} global fitness {best_solution.fitness}')
+                if self.log:
+                    print(
+                        f'Iteration {self.iterations} with max fitness {new_best.fitness} and global fitness {best_solution.fitness}')
+
                 if new_best.fitness > best_solution.fitness:
                     best_solution = new_best
                     self.improveless_iterations = 0
                 else:
                     self.improveless_iterations += 1
+
+                if self.iterations % 1000 == 0 and self.save_results:
+                    self.results_file.write(
+                        f'{self.iterations};{best_solution.fitness}\n')
 
         # gets the best solution of the current population and returns it
         return best_solution
@@ -153,20 +190,23 @@ class GeneticAlgorithm(Algorithm):
         """
         res = []
 
+        # creates an initial solution
         solution = self.random_solution()
-
         chromosome = Chromosome(solution, self.evaluate(solution))
         res.append(chromosome)
 
         for _ in range(self.population_size - 1):
-            solution = copy.deepcopy(solution)
-            random.shuffle(solution)
-
+            # creates new solutions based on the initial one
+            # changing its order and its drones
+            new_solution = []
             for transportation in solution:
-                transportation.drone = self.simulation.random_drone()
+                new_transportation = copy.copy(transportation)
+                new_transportation.drone = self.simulation.random_drone()
+                new_solution.append(new_transportation)
 
-            chromosome = Chromosome(solution, self.evaluate(solution))
+            chromosome = Chromosome(new_solution, self.evaluate(new_solution))
             res.append(chromosome)
+            solution = new_solution
 
         return res
 
@@ -181,6 +221,17 @@ class GeneticAlgorithm(Algorithm):
             Chromosome: The best chromosome
         """
         return max(population, key=lambda chromosome: chromosome.fitness)
+
+    def __population_statistics(self, population):
+        total_fitness = 0
+        min_fitness = population[0].fitness
+
+        for chromosome in population:
+            chromosome_fitness = chromosome.fitness
+            total_fitness += chromosome_fitness
+            min_fitness = min(min_fitness, chromosome_fitness)
+
+        return total_fitness / len(population), min_fitness
 
     def __new_generation(self, population):
         """Gets a new generation using crossover between Chromosomes in a given population.

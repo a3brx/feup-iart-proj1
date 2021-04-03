@@ -30,6 +30,9 @@ def modify_drone(solution, simulation):
     """
     solution = solution.copy()
 
+    if simulation.environment.drones_count == 1:
+        return solution
+
     random_operation = random.randrange(0, len(solution))
     new_drone = simulation.random_drone()
 

@@ -22,14 +22,14 @@ def plot_results(graphics):
 
     plt.show()
 
-def plot_hill_climbing(data, iterations=12750):
+def plot_hill_climbing(data, iterations=9250):
     search = HillClimbing(data, iterations)
     search.run()
     plot_results({
         "max score": search.solution_list
     })
 
-def plot_simulated_annealing(data, iterations=12750):
+def plot_simulated_annealing(data, iterations=9250):
     alphas = [80, 85, 90, 95, 99]
 
     annealings = [

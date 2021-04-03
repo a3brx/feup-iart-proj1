@@ -8,7 +8,7 @@ Classes:
 """
 
 from abc import ABC, abstractmethod
-import algorithm.operation.restriction as restriction
+import delivery.algorithm.operation.restriction as restriction
 import copy
 import random
 
@@ -63,7 +63,9 @@ class OnePointCrossover(Crossover):
             (List[Path], List[Path]): The two generated offsprings
         """
         # generates the cut point
-        min_size = min(len(parent1), len(parent2))
+        [smaller, larger] = sorted(
+            (parent1, parent2), key=lambda parent: len(parent))
+        min_size = len(smaller)
         cut_point = random.randint(1, min_size - 1)
 
         # starts the offsprings with the first part of the parents
@@ -77,8 +79,8 @@ class OnePointCrossover(Crossover):
         offspring2_hashes_destination = set()
 
         for idx in range(cut_point):
-            gene1 = parent1[idx]
-            gene2 = parent2[idx]
+            gene1 = copy.copy(smaller[idx])
+            gene2 = copy.copy(larger[idx])
 
             offspring1.append(gene1)
             offspring2.append(gene2)
@@ -90,14 +92,17 @@ class OnePointCrossover(Crossover):
             offspring2_hashes_destination.add(gene2.hash_destination())
 
         # finishes the building of the offspring with the other parent
-        for gene in parent2:
-            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, gene):
-                offspring1.append(gene)
-        for gene in parent1:
-            if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, gene):
-                offspring2.append(gene)
+        for idx in range(0, min_size):
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, larger[idx]):
+                offspring1.append(copy.copy(larger[idx]))
+            if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, smaller[idx]):
+                offspring2.append(copy.copy(smaller[idx]))
 
-        return (offspring1, offspring2)
+        for idx in range(min_size, len(larger)):
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, larger[idx]):
+                offspring1.append(copy.copy(larger[idx]))
+
+        return (copy.deepcopy(offspring1), copy.deepcopy(offspring2))
 
 
 class OrderCrossover(Crossover):
@@ -119,8 +124,11 @@ class OrderCrossover(Crossover):
             (List[Path], List[Path]): The two generated offsprings
         """
         # generates the cut points
-        min_size = min(len(parent1), len(parent2))
-        [p1, p2] = random.sample(range(1, min_size - 1), 2)
+        [smaller, larger] = sorted(
+            (parent1, parent2), key=lambda parent: len(parent))
+        min_size = len(smaller)
+        points = random.sample(range(1, min_size - 1), 2)
+        [p1, p2] = sorted(points)
 
         # starts the offsprings with the sequence between the points in the parents
         offspring1 = []
@@ -133,8 +141,8 @@ class OrderCrossover(Crossover):
         offspring2_hashes_destination = set()
 
         for idx in range(p1, p2):
-            gene1 = parent1[idx]
-            gene2 = parent2[idx]
+            gene1 = copy.copy(smaller[idx])
+            gene2 = copy.copy(larger[idx])
 
             offspring1.append(gene1)
             offspring2.append(gene2)
@@ -149,17 +157,20 @@ class OrderCrossover(Crossover):
         # inserts the genes to the left of the second point
         for idx in range(p2 - 1, -1, -1):
             # the range goes from the second point to 0 in reverse order
-            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, parent2[idx]):
-                offspring1.insert(0, parent2[idx])
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, larger[idx]):
+                offspring1.insert(0, copy.copy(larger[idx]))
             if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, parent1[idx]):
-                offspring2.insert(0, parent1[idx])
+                offspring2.insert(0, copy.copy(smaller[idx]))
 
         # appends the genes to the right of the second point
-        for idx in range(p2, len(parent2)):
-            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, parent2[idx]):
-                offspring1.append(parent2[idx])
-        for idx in range(p2, len(parent1)):
-            if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, parent1[idx]):
-                offspring2.append(parent1[idx])
+        for idx in range(p2, min_size):
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, larger[idx]):
+                offspring1.append(copy.copy(larger[idx]))
+            if restriction.valid_insert(offspring2_hashes_source, offspring2_hashes_destination, smaller[idx]):
+                offspring2.append(copy.copy(smaller[idx]))
+
+        for idx in range(min_size, len(larger)):
+            if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, larger[idx]):
+                offspring1.append(copy.copy(larger[idx]))
 
         return (offspring1, offspring2)

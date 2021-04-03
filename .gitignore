@@ -4,7 +4,12 @@
 
 ### Problem results ###
 *.out
+results_*.log
+
+!results/*
 
 ### VSCode ###
 # Launch file
 .vscode/launch.json
+
+.ipynb_*/
