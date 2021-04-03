@@ -57,8 +57,5 @@ class LocalSearch:
                 self.set_solution(neighbour)
                 print("Iteration", self.total_iterations, "with new solution of", self.solution.get_score())
 
-            if self.iterations > self.max_iterations:
-                break
-
         self.solution_list.append((self.max_iterations, self.solution))
         return self.solution

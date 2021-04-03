@@ -2,6 +2,6 @@
     "input_file": "data/fouroo.in",
     "output_file": "test2.out",
     "algorithm": {
-        "name": "hill_climbing",
+        "name": "hill_climbing"
     }
 }
