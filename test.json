@@ -1,0 +1,11 @@
+{
+    "input_file": "data/fouroo.in",
+    "output_file": "ze.out",
+    "algorithm": {
+        "name": "genetic",
+        "generational": "False",
+        "iterations": "2",
+        "selection_method": "tournament",
+        "tournament_size": "10"
+    }
+}
