@@ -1,30 +1,82 @@
-import copy
-import random
+from timeit import default_timer as timer
 
-import delivery.algorithm.operation.mutation as mutations
-from delivery.algorithm.algorithm import Algorithm
+from delivery.algorithm.operation.neighbourhood import *
+from delivery.solution.solution import Solution
 
 
-class LocalSearch(Algorithm):
+class LocalSearch:
 
-    def __init__(self, simulation, max_time=None, max_iterations=5000, max_improveless_iterations=None):
-        super().__init__(simulation, max_time, max_iterations,
-                         max_improveless_iterations)
+    ITERATIONS_PER_RESULT = 10
 
-        self.mutation_functions = [
-            mutations.exchange_positions, mutations.modify_drone]
+    def __init__(self, data, max_iterations=5000, iteration_search=50, save_results=False):
+        self.data = data
+        self.solution = Solution.initial(self.data)
+        self.solution.get_score()
+        self.iterations = 0
+        self.max_iterations = max_iterations
+        self.save_results = save_results
+        self.iteration_search = iteration_search
+        if self.save_results:
+            self.results_file = open(
+                f'results_{str(timer())}.log', 'a')
+            self.results_file.write(self.output_legend() + "\n")
 
-    def random_neighbour(self, solution):
-        solution = copy.deepcopy(solution)
+    def get_random_neighbour(self):
+        functions = [
+            ("Position", swap_operations),
+            ("Drone", switch_operation_drone),
+            ("Order", swap_order_items)
+        ]
+        max_result = self.solution.copy()
+        max_score = max_result.get_score()
+        for _ in range(self.iteration_search):
+            new_result = self.solution.copy()
+            position = randrange(len(functions))
+            key, function = functions[position]
+            if function(new_result):
+                new_score = new_result.get_score()
+                if new_score > max_score:
+                    max_result, max_score = new_result, new_score
+        return max_result
 
-        min_ops = min(1, len(solution) // 1000)
-        max_ops = max(1, len(solution) // 150)
+    def recalculate_attributes(self):
+        pass
 
-        op_count = random.randint(min_ops, max_ops)
+    def accept_condition(self, delta):
+        return delta > 0
 
-        for _ in range(0, op_count):
-            mutation_function = random.choice(self.mutation_functions)
+    def print_solution(self, text="new"):
+        pass
+        # print(text + " score:", self.solution.get_score())
+        # for operation in self.solution.operations:
+        #    print(operation)
+        # print("-" * 60)
 
-            solution = mutation_function(solution, self.simulation)
+    def set_solution(self, solution):
+        self.solution = solution
 
-        return solution
+    def output_legend(self):
+        return "Iteration;Score"
+
+    def output_line(self):
+        return str(self.total_iterations) + ";" + str(self.solution.get_score())
+
+    def run(self):
+        print("Starting search")
+        print("Iteration 0 with initial solution of", self.solution.get_score())
+
+        for self.total_iterations in range(1, self.max_iterations + 1):
+            self.recalculate_attributes()
+
+            neighbour = self.get_random_neighbour()
+            delta = neighbour.get_score() - self.solution.get_score()
+
+            if self.accept_condition(delta):
+                self.set_solution(neighbour)
+                print("Iteration", self.total_iterations,
+                      "with new solution of", self.solution.get_score())
+
+            if self.total_iterations % LocalSearch.ITERATIONS_PER_RESULT == 0:
+                self.results_file.write(self.output_line() + "\n")
+
+        return self.solution

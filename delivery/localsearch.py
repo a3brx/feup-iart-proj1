@@ -1,16 +1,13 @@
-import delivery.input.file_parsing as file_parsing
+from delivery.model.data import Data
 from delivery.algorithm.localsearch.hillclimbing import HillClimbing
-from delivery.output.output import save_solution
-
+from delivery.algorithm.localsearch.simulatedannealing import SimulatedAnnealing
 
 def run():
-    simulation = file_parsing.parse("data/custom.in")
+    data = Data.from_input_file("data/custom.in")
 
-    algorithm = HillClimbing(simulation)
+    algorithm = HillClimbing(data, 1000)
 
     sol = algorithm.run()
-
-    save_solution(sol, simulation)
 
     # print(algorithm.evaluate(sol))
 

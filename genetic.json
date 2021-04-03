@@ -1,6 +1,6 @@
 {
     "input_file": "data/fouroo.in",
-    "output_file": "ze.out",
+    "output_file": "test1.out",
     "algorithm": {
         "name": "genetic",
         "max_time": "20",

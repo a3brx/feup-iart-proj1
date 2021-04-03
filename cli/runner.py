@@ -3,8 +3,10 @@ from delivery.algorithm.genetic.selection import RoulleteSelection, TournamentSe
 import inspect
 
 import delivery.input.file_parsing as file_parsing
+from delivery.model.data import Data
 from delivery.algorithm.genetic.genetic import GeneticAlgorithm
 from delivery.algorithm.localsearch.hillclimbing import HillClimbing
+from delivery.algorithm.localsearch.simulatedannealing import SimulatedAnnealing
 from delivery.output.output import save_solution
 
 from cli.json_parser import JsonObject, JsonParser, JsonValue
@@ -17,7 +19,8 @@ def str2bool(v):
 class Runner:
 
     available_algorithms = {'genetic': GeneticAlgorithm,
-                            'hill_climbing': HillClimbing}
+                            'hill_climbing': HillClimbing,
+                            "simulated_annealing": SimulatedAnnealing}
 
     def __init__(self, input_file, output_file, algorithm, arguments):
         self.input_file = input_file
@@ -43,7 +46,7 @@ class Runner:
         return cls(input_file, output_file, AlgorithmClass, arguments)
 
     def run(self):
-        simulation = file_parsing.parse(self.input_file)
+        simulation = file_parsing.parse(self.input_file) if self.algorithm == GeneticAlgorithm else Data.from_input_file(self.input_file)
         tournament_size = -1
         if "tournament_size" in self.arguments:
             tournament_size = self.arguments["tournament_size"]
@@ -81,13 +84,18 @@ class Runner:
         if hasattr(res, 'solution'):
             res = res.solution
 
-        save_solution(res, simulation, self.output_file)
+        if self.algorithm == GeneticAlgorithm:
+            save_solution(res, simulation, self.output_file)
+        else:
+            res.to_output_file(self.output_file)
 
     def __algorithm_args(algorithm_name, json):
         if algorithm_name == 'genetic':
             return Runner.__genetic_args(json)
         elif algorithm_name == 'hill_climbing':
             return Runner.__hill_args(json)
+        elif algorithm_name == 'simulated_annealing':
+            return Runner.__simulated_annealing(json)
 
     def __genetic_args(json):
         args = {}
@@ -144,18 +152,42 @@ class Runner:
 
     def __hill_args(json):
         args = {}
-        max_time = json.get('max_time', required=False)
-        if max_time is not None:
-            args['max_time'] = int(max_time)
 
         max_iterations = (json.get('max_iterations', required=False))
         if max_iterations is not None:
             args['max_iterations'] = int(max_iterations)
 
-        max_improveless_iterations = (
-            json.get('max_improveless_iterations', required=False))
-        if max_improveless_iterations is not None:
-            args['max_improveless_iterations'] = int(
-                max_improveless_iterations)
+        iteration_search = (json.get('iteration_search', required=False))
+        if iteration_search is not None:
+            args['iteration_search'] = int(iteration_search)
+
+        save_results = (json.get('save_results', required=False))
+        if save_results is not None:
+            args['save_results'] = str2bool(save_results)
+
+        return args
+
+    def __simulated_annealing(json):
+        args = {}
+
+        max_iterations = (json.get('max_iterations', required=False))
+        if max_iterations is not None:
+            args['max_iterations'] = int(max_iterations)
+
+        iteration_search = (json.get('iteration_search', required=False))
+        if iteration_search is not None:
+            args['iteration_search'] = int(iteration_search)
+
+        temperature_schedule = (json.get('temperature_schedule', required=False))
+        if temperature_schedule is not None:
+            args['temperature_schedule'] = float(temperature_schedule)
+
+        initial_temperature = (json.get('initial_temperature', required=False))
+        if initial_temperature is not None:
+            args['initial_temperature'] = int(initial_temperature)
+
+        save_results = (json.get('save_results', required=False))
+        if save_results is not None:
+            args['save_results'] = str2bool(save_results)
 
         return args
