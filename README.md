@@ -60,15 +60,32 @@ Tu run the program with a desired configuration, it receives a JSON input file (
     "output_file": "test2.out",
     "algorithm": {
         "name": "hill_climbing",
-        "max_time": "20",
         "max_iterations": "2"
     }
 }
 ```
 
 - **algorithm**: required
-    - **max_time**: the max time the algorithm can take in seconds
     - **max_iterations**: the max possible number of iterations
-    - **max_improveless_iterations**: the max number of improveless iterations
+
+##### Simulated Annealing
+
+```json
+{
+    "input_file": "data/fouroo.in",
+    "output_file": "test3.out",
+    "algorithm": {
+        "name": "simulated_annealing",
+        "max_iterations": "2",
+        "temperature_schedule": "0.9",
+        "initial_temperature": "1000"
+    }
+}
+```
+
+- **algorithm**: required
+    - **max_iterations**: the max possible number of iterations
+    - **temperature_schedule**: the time schedule, the factor that will define the rate of decreasing in temperature
+    - **initial_temperature**: the initial temperature
 
 The `genetic.json` is given in this repo.

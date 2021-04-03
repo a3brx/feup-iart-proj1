@@ -5,6 +5,7 @@ import inspect
 import delivery.input.file_parsing as file_parsing
 from delivery.algorithm.genetic.genetic import GeneticAlgorithm
 from delivery.algorithm.localsearch.hillclimbing import HillClimbing
+from delivery.algorithm.localsearch.simulatedannealing import SimulatedAnnealing
 from delivery.output.output import save_solution
 
 from cli.json_parser import JsonObject, JsonParser, JsonValue
@@ -17,7 +18,8 @@ def str2bool(v):
 class Runner:
 
     available_algorithms = {'genetic': GeneticAlgorithm,
-                            'hill_climbing': HillClimbing}
+                            'hill_climbing': HillClimbing,
+                            "simulated_annealing": SimulatedAnnealing}
 
     def __init__(self, input_file, output_file, algorithm, arguments):
         self.input_file = input_file
@@ -88,6 +90,8 @@ class Runner:
             return Runner.__genetic_args(json)
         elif algorithm_name == 'hill_climbing':
             return Runner.__hill_args(json)
+        elif algorithm_name == 'simulated_annealing':
+            return Runner.__simulated_annealing(json)
 
     def __genetic_args(json):
         args = {}
@@ -144,18 +148,26 @@ class Runner:
 
     def __hill_args(json):
         args = {}
-        max_time = json.get('max_time', required=False)
-        if max_time is not None:
-            args['max_time'] = int(max_time)
 
         max_iterations = (json.get('max_iterations', required=False))
         if max_iterations is not None:
             args['max_iterations'] = int(max_iterations)
 
-        max_improveless_iterations = (
-            json.get('max_improveless_iterations', required=False))
-        if max_improveless_iterations is not None:
-            args['max_improveless_iterations'] = int(
-                max_improveless_iterations)
+        return args
+
+    def __simulated_annealing(json):
+        args = {}
+
+        max_iterations = (json.get('max_iterations', required=False))
+        if max_iterations is not None:
+            args['max_iterations'] = int(max_iterations)
+
+        max_iterations = (json.get('temperature_schedule', required=False))
+        if max_iterations is not None:
+            args['temperature_schedule'] = int(max_iterations)
+
+        max_iterations = (json.get('initial_temperature', required=False))
+        if max_iterations is not None:
+            args['initial_temperature'] = int(max_iterations)
 
         return args
