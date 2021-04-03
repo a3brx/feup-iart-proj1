@@ -40,11 +40,13 @@ class LocalSearch:
 
     def set_solution(self, solution):
         if solution.get_score() != self.solution.get_score():
-            print("score:", self.solution.get_score())
             self.solution_list.append((self.total_iterations, solution))
         self.solution = solution
 
     def run(self):
+        print("Starting search")
+        print("Iteration 0 with initial solution of", self.solution.get_score())
+
         for self.total_iterations in range(1, self.max_iterations + 1):
             self.recalculate_attributes()
 
@@ -53,6 +55,7 @@ class LocalSearch:
 
             if self.accept_condition(delta):
                 self.set_solution(neighbour)
+                print("Iteration", self.total_iterations, "with new solution of", self.solution.get_score())
 
             if self.iterations > self.max_iterations:
                 break

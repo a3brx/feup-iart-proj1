@@ -3,6 +3,6 @@
     "output_file": "test2.out",
     "algorithm": {
         "name": "hill_climbing",
-        "max_iterations": "2"
+        "max_iterations": "20"
     }
 }

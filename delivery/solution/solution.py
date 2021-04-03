@@ -100,6 +100,7 @@ class Solution:
 
     @classmethod
     def initial(cls, environment):
+        print("Building initial solution")
         # Create lists of items by product
         items_by_product = {}
         for product in environment.products:
