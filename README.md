@@ -39,55 +39,74 @@ Tu run the program with a desired configuration, it receives a JSON input file (
 ```
 
 - **algorithm**: required
-    - **name**: the algorithm, required, should be genetic
-    - **time**: the max time the algorithm can take in seconds
-    - **iterations**: the max possible number of iterations
-    - **max_improveless_iterations**: the max number of improveless iterations, default 20
-    - **selection_method**: the selection method, default is tournament, should be in {tournament, roullete}
-    - **tournament_size**: the size of the tournament (only in tournament selections)
-    - **crossover**: the crossover, default ir order, should be in {order, one_point}
-    - **population_size** : the size of the population, default is 30
-    - **generational**: if the algorithm runs through generations or iterations
-    - **mutation_probability**: the probability of mutations, default is 0.2
-    - **log**: if displays results in real time, default is true
-    - **save_results**: if saves the results to a file, default is false
+- **name**: the algorithm, required, should be genetic
+- **time**: the max time the algorithm can take in seconds
+- **iterations**: the max possible number of iterations
+- **max_improveless_iterations**: the max number of improveless iterations, default 20
+- **selection_method**: the selection method, default is tournament, should be in {tournament, roullete}
+- **tournament_size**: the size of the tournament (only in tournament selections)
+- **crossover**: the crossover, default ir order, should be in {order, one_point}
+- **population_size** : the size of the population, default is 30
+- **generational**: if the algorithm runs through generations or iterations
+- **mutation_probability**: the probability of mutations, default is 0.2
+- **log**: if displays results in real time, default is true
+- **save_results**: if saves the results to a file, default is false
 
 ##### Hill Climbing
 
 ```json
 {
-    "input_file": "data/fouroo.in",
+    "input_file": "data/custom.in",
     "output_file": "test2.out",
     "algorithm": {
         "name": "hill_climbing",
-        "max_iterations": "2"
+        "max_iterations": "1000",
+        "iteration_search": "20",
+        "save_results": "True"
     }
 }
 ```
 
 - **algorithm**: required
-    - **max_iterations**: the max possible number of iterations
-    - **iteration_search**: the number of neighbours generated per iteration
+- **max_iterations**: the max possible number of iterations
+- **iteration_search**: the number of neighbours generated per iteration
 
 ##### Simulated Annealing
 
 ```json
 {
-    "input_file": "data/fouroo.in",
+    "input_file": "data/custom.in",
     "output_file": "test3.out",
     "algorithm": {
         "name": "simulated_annealing",
-        "max_iterations": "2",
+        "max_iterations": "1000",
+        "iteration_search": "20",
+        "initial_temperature": "1000",
         "temperature_schedule": "0.9",
-        "initial_temperature": "1000"
+        "save_results": "True"
     }
 }
 ```
 
 - **algorithm**: required
-    - **max_iterations**: the max possible number of iterations
-    - **iteration_search**: the number of neighbours generated per iteration
-    - **temperature_schedule**: the time schedule, the factor that will define the rate of decreasing in temperature
-    - **initial_temperature**: the initial temperature
+- **max_iterations**: the max possible number of iterations
+- **iteration_search**: the number of neighbours generated per iteration
+- **temperature_schedule**: the time schedule, the factor that will define the rate of decreasing in temperature
+- **initial_temperature**: the initial temperature
 
-The `genetic.json` and `hill_climbing.json` are given in this repo.
+The `genetic.json`, `hill_climbing.json` and `simulated_annealing.json` are given in this repository.
+
+## Requirements
+
+- Python 3.9 or higher
+- Pandas (for Jupyter Notebook only)
+- matplotlib (for Jupyter Notebook only)
+- numpy (for Jupyter Notebook only)
+
+### Disclaimer
+
+This repository contains the first project solved during the course unit. Note that it might contain errors and should not be used as a solution.
+
+### License
+
+[MIT](https://opensource.org/licenses/MIT)
