@@ -90,4 +90,4 @@ Tu run the program with a desired configuration, it receives a JSON input file (
     - **temperature_schedule**: the time schedule, the factor that will define the rate of decreasing in temperature
     - **initial_temperature**: the initial temperature
 
-The `genetic.json` is given in this repo.
+The `genetic.json` and `hill_climbing.json` are given in this repo.
