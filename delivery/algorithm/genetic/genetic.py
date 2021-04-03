@@ -188,6 +188,7 @@ class GeneticAlgorithm(Algorithm):
         # creates an initial solution
         solution = self.random_solution()
         chromosome = Chromosome(solution, self.evaluate(solution))
+        print(self.evaluate(solution))
         res.append(chromosome)
 
         for _ in range(self.population_size - 1):
@@ -199,7 +200,7 @@ class GeneticAlgorithm(Algorithm):
                 new_transportation.drone = self.simulation.random_drone()
                 new_solution.append(new_transportation)
 
-            random.shuffle(new_solution)
+            print(self.evaluate(new_solution))
 
             chromosome = Chromosome(new_solution, self.evaluate(new_solution))
             res.append(chromosome)

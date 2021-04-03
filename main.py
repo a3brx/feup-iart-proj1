@@ -1,3 +1,5 @@
-import delivery.genetic as main
+import delivery.genetic as genetic_main
+import delivery.localsearch as localsearch_main
 
-main.run()
+genetic_main.run()
+# localsearch_main.run()

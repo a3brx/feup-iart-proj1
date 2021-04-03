@@ -33,7 +33,7 @@ def run():
     crossover = OrderCrossover()
 
     algorithm = GeneticAlgorithm(
-        simulation, population_size=30, generational=True, crossover=crossover, selection_method=selection, mutation_probability=0.15, max_improveless_iterations=100, save_results=True)
+        simulation, population_size=30, generational=True, crossover=crossover, selection_method=selection, mutation_probability=0.15, max_improveless_iterations=250, save_results=True)
 
     sol = algorithm.run().solution
 

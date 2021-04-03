@@ -2,26 +2,42 @@ from delivery.algorithm.localsearch.localsearch import LocalSearch
 
 
 class HillClimbing(LocalSearch):
-    def __init__(self, model):
-        super().__init__(model)
+
+    def __init__(self, simulation, max_time=None, max_iterations=5000, max_improveless_iterations=None):
+        super().__init__(simulation, max_time, max_iterations,
+                         max_improveless_iterations)
+
+    def random_better_neighbour(self, solution, max_iteration_search=500):
+        initial_score = self.evaluate(solution)
+
+        for _ in range(0, max_iteration_search):
+            neighbour = self.random_neighbour(solution)
+
+            neighbour_score = self.evaluate(neighbour)
+
+            print(f'Neighbour: {neighbour_score}')
+
+            if neighbour_score > initial_score:
+                return (neighbour, neighbour_score)
+
+        return (solution, initial_score)
 
     def run(self):
-        neighbour = self.model
-        neighbour_evaluation = neighbour.evaluate_solution()
-        for path in neighbour.solution:
-            print(path)
-        print("Evaluation:", neighbour_evaluation)
-        it = 0
-        while it < 1000:
-            new_neighbour = self.random_neighbour(neighbour)
-            # print(new_neighbour)
-            new_neighbour_evaluation = new_neighbour.evaluate_solution()
-            if new_neighbour_evaluation > neighbour_evaluation:
-                neighbour = new_neighbour
-                neighbour_evaluation = new_neighbour_evaluation
-                print("-" * 100)
-                for path in neighbour.solution:
-                    print(path)
-                print("Evaluation:", neighbour_evaluation)
-                it = 0
-            it += 1
+        solution = self.random_solution()
+        score = self.evaluate(solution)
+
+        print(score)
+
+        while not self.stop():
+            self.iterations += 1
+
+            neighbour, neighbour_score = self.random_better_neighbour(solution)
+
+            if neighbour_score > score:
+                print(f'Improved from {score} to {neighbour_score}')
+                solution = neighbour
+                score = neighbour_score
+            else:
+                return solution
+
+        return solution
