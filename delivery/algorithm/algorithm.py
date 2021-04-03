@@ -200,4 +200,4 @@ class Algorithm(ABC):
         """
         return self.max_time is not None and timer() - self.starting_time >= self.max_time \
             or self.max_iterations is not None and self.iterations >= self.max_iterations \
-            or (self.max_time is not None and self.max_improveless_iterations <= self.improveless_iterations)
+            or self.max_improveless_iterations is not None and self.max_improveless_iterations <= self.improveless_iterations

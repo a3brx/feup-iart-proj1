@@ -7,6 +7,7 @@ Classes:
 
 import copy
 import random
+import statistics
 from timeit import default_timer as timer
 
 import delivery.algorithm.operation.mutation as mutations
@@ -67,7 +68,7 @@ class GeneticAlgorithm(Algorithm):
 
             if self.generational:
                 self.results_file.write(
-                    'Generation;Generation max fitness;Global max fitness\n')
+                    'Generation;Generation max fitness;Generation min fitness;Generation average fitness;Global max fitness\n')
             else:
                 self.results_file.write(
                     'Iteration;Fitness\n')
@@ -102,8 +103,11 @@ class GeneticAlgorithm(Algorithm):
                 new_best = self.best_solution(population)
 
                 if self.iterations % 10 == 0 and self.save_results:
+                    average_fitness, min_fitness = self.__population_statistics(
+                        population)
+
                     self.results_file.write(
-                        f'{self.iterations};{new_best.fitness};{best_solution.fitness}\n')
+                        f'{self.iterations};{new_best.fitness};{min_fitness};{average_fitness};{best_solution.fitness}\n')
 
                 if self.log:
                     print(
@@ -188,7 +192,6 @@ class GeneticAlgorithm(Algorithm):
         # creates an initial solution
         solution = self.random_solution()
         chromosome = Chromosome(solution, self.evaluate(solution))
-        print(self.evaluate(solution))
         res.append(chromosome)
 
         for _ in range(self.population_size - 1):
@@ -199,8 +202,6 @@ class GeneticAlgorithm(Algorithm):
                 new_transportation = copy.copy(transportation)
                 new_transportation.drone = self.simulation.random_drone()
                 new_solution.append(new_transportation)
-
-            print(self.evaluate(new_solution))
 
             chromosome = Chromosome(new_solution, self.evaluate(new_solution))
             res.append(chromosome)
@@ -219,6 +220,17 @@ class GeneticAlgorithm(Algorithm):
             Chromosome: The best chromosome
         """
         return max(population, key=lambda chromosome: chromosome.fitness)
+
+    def __population_statistics(self, population):
+        total_fitness = 0
+        min_fitness = population[0].fitness
+
+        for chromosome in population:
+            chromosome_fitness = chromosome.fitness
+            total_fitness += chromosome_fitness
+            min_fitness = min(min_fitness, chromosome_fitness)
+
+        return total_fitness / len(population), min_fitness
 
     def __new_generation(self, population):
         """Gets a new generation using crossover between Chromosomes in a given population.

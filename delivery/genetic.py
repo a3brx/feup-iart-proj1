@@ -26,7 +26,7 @@ def read_from_file(filename):
 
 
 def run():
-    simulation = file_parsing.parse("data/custom.in")
+    simulation = file_parsing.parse("data/obvious.in")
 
     selection = TournamentSelection(15)
     #selection = RoulleteSelection()
