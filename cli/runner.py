@@ -3,6 +3,7 @@ from delivery.algorithm.genetic.selection import RoulleteSelection, TournamentSe
 import inspect
 
 import delivery.input.file_parsing as file_parsing
+from delivery.model.data import Data
 from delivery.algorithm.genetic.genetic import GeneticAlgorithm
 from delivery.algorithm.localsearch.hillclimbing import HillClimbing
 from delivery.algorithm.localsearch.simulatedannealing import SimulatedAnnealing
@@ -45,7 +46,7 @@ class Runner:
         return cls(input_file, output_file, AlgorithmClass, arguments)
 
     def run(self):
-        simulation = file_parsing.parse(self.input_file)
+        simulation = file_parsing.parse(self.input_file) if self.algorithm == GeneticAlgorithm else Data.from_input_file(self.input_file)
         tournament_size = -1
         if "tournament_size" in self.arguments:
             tournament_size = self.arguments["tournament_size"]
@@ -83,7 +84,10 @@ class Runner:
         if hasattr(res, 'solution'):
             res = res.solution
 
-        save_solution(res, simulation, self.output_file)
+        if self.algorithm == GeneticAlgorithm:
+            save_solution(res, simulation, self.output_file)
+        else:
+            res.to_output_file(self.output_file)
 
     def __algorithm_args(algorithm_name, json):
         if algorithm_name == 'genetic':
