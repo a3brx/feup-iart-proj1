@@ -4,7 +4,7 @@ from delivery.output.output import save_solution
 
 
 def run():
-    simulation = file_parsing.parse("data/busy_day.in")
+    simulation = file_parsing.parse("data/custom.in")
 
     algorithm = HillClimbing(simulation)
 
