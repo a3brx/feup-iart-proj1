@@ -1,3 +1,4 @@
+from delivery.algorithm.genetic.crossover import OnePointCrossover, OrderCrossover
 from delivery.algorithm.genetic.selection import RoulleteSelection, TournamentSelection
 import inspect
 
@@ -66,6 +67,16 @@ class Runner:
 
                 algorithm_obj.selection_method = roullete
 
+        if "crossover" in self.arguments:
+            crossover = self.arguments["crossover"]
+
+            if crossover == "one_point":
+                algorithm_obj.crossover = OnePointCrossover()
+
+            elif crossover == "order":
+                algorithm_obj.crossover = OrderCrossover()
+    
+        # runs the algorithm
         res = algorithm_obj.run()
         if hasattr(res, 'solution'):
             res = res.solution
@@ -133,7 +144,6 @@ class Runner:
 
     def __hill_args(json):
         args = {}
-
         max_time = json.get('max_time', required=False)
         if max_time is not None:
             args['max_time'] = int(max_time)

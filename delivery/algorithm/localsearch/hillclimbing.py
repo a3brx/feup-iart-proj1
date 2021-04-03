@@ -7,7 +7,7 @@ class HillClimbing(LocalSearch):
         super().__init__(simulation, max_time, max_iterations,
                          max_improveless_iterations)
 
-    def random_better_neighbour(self, solution, max_iteration_search=30):
+    def random_better_neighbour(self, solution, max_iteration_search=50):
         initial_score = self.evaluate(solution)
 
         for _ in range(0, max_iteration_search):
@@ -15,7 +15,7 @@ class HillClimbing(LocalSearch):
 
             neighbour_score = self.evaluate(neighbour)
 
-            print(f'Neighbour: {neighbour_score}')
+            # print(f'Neighbour: {neighbour_score}')
 
             if neighbour_score > initial_score:
                 return (neighbour, neighbour_score)
@@ -26,7 +26,7 @@ class HillClimbing(LocalSearch):
         solution = self.random_solution()
         score = self.evaluate(solution)
 
-        print(score)
+        # print(score)
 
         while not self.stop():
             self.iterations += 1
