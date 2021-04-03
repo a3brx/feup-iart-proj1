@@ -3,12 +3,13 @@ from solution.solution import Solution
 
 
 class LocalSearch:
-    def __init__(self, data):
+    def __init__(self, data, max_iterations):
         self.data = data
         self.solution = Solution.initial(self.data)
         self.solution.get_score()
         self.iterations = 0
-        self.max_iterations = 100
+        self.max_iterations = max_iterations
+        self.solution_list = [(0, self.solution)]
 
     def get_random_neighbour(self):
         result = self.solution.copy()
@@ -31,23 +32,27 @@ class LocalSearch:
         return delta > 0
 
     def print_solution(self, text="new"):
-        print(text + " score:", self.solution.get_score())
+        pass
+        # print(text + " score:", self.solution.get_score())
         #for operation in self.solution.operations:
         #    print(operation)
-        print("-" * 60)
+        # print("-" * 60)
+
+    def set_solution(self, solution):
+        if solution.get_score() != self.solution.get_score():
+            print("score:", self.solution.get_score())
+            self.solution_list.append((self.total_iterations, solution))
+        self.solution = solution
 
     def run(self):
-        self.print_solution("initial")
-
-        for _ in range(10 * self.max_iterations):
+        for self.total_iterations in range(1, int(10 * self.max_iterations) + 1):
             self.recalculate_attributes()
 
             neighbour = self.get_random_neighbour()
             delta = neighbour.get_score() - self.solution.get_score()
 
             if self.accept_condition(delta):
-                self.solution = neighbour
-                self.print_solution()
+                self.set_solution(neighbour)
                 self.iterations = 0
 
             self.iterations += 1
