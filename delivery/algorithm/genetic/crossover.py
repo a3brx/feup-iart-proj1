@@ -102,7 +102,7 @@ class OnePointCrossover(Crossover):
             if restriction.valid_insert(offspring1_hashes_source, offspring1_hashes_destination, larger[idx]):
                 offspring1.append(copy.copy(larger[idx]))
 
-        return (copy.deepcopy(offspring1), copy.deepcopy(offspring2))
+        return (offspring1, offspring2)
 
 
 class OrderCrossover(Crossover):

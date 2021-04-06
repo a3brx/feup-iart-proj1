@@ -9,7 +9,7 @@
         "selection_method": "tournament",
         "tournament_size": "10",
         "crossover": "order",
-        "population_size" : "30",
+        "population_size": "30",
         "generational": "True",
         "mutation_probability": "0.2",
         "log": "True",
