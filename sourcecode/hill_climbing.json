@@ -1,0 +1,10 @@
+{
+    "input_file": "data/custom.in",
+    "output_file": "test2.out",
+    "algorithm": {
+        "name": "hill_climbing",
+        "max_iterations": "1000",
+        "iteration_search": "20",
+        "save_results": "True"
+    }
+}
